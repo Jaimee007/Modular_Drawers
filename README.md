@@ -8,6 +8,7 @@ Cajonera modular inteligente impresa en 3D. Cada cajón lleva su propio microcon
 |---|---|
 | [docs/plan_cajonera_modular.md](docs/plan_cajonera_modular.md) | Plan de diseño: requisitos, arquitectura, hardware, diseño 3D, firmware y riesgos |
 | [docs/bom_5_cajones.md](docs/bom_5_cajones.md) | Lista de materiales para un prototipo de 5 cajones + referencias de JLCPCB |
+| [docs/plan_firmware.md](docs/plan_firmware.md) | Plan paso a paso para programar y probar el firmware (PlatformIO), del primer parpadeo a Home Assistant |
 | [docs/esquematico_2_cajones.html](docs/esquematico_2_cajones.html) | Esquemático de referencia (base + 2 cajones). Abrir en el navegador |
 
 ## Herramientas
