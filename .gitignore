@@ -4,3 +4,6 @@
 fp-info-cache
 *.net
 hardware/*/*/fab/
+# PlatformIO
+.pio/
+.vscode/
