@@ -234,7 +234,7 @@ El LED de 5 mm (difuso) se orienta a ~45°, mirando hacia abajo y hacia delante,
 
 | Parte | Componentes |
 |---|---|
-| **Entrada (en la base)** | USB-C hembra de 5 V/3 A + polyfuse de 2 A + condensador de 1000 µF + TVS de 5 V |
+| **Entrada (en la base)** | USB-C hembra de 5 V/3 A + polyfuse de 2 A + condensador de 1000 µF + TVS de 5 V. **Alimenta también la SuperMini** por su pin 5V: un solo cable de entrada |
 | **Por módulo** | LDO de 3,3 V (XC6206P332, LCSC C5446) solo para el micro, con 100 nF + 10 µF |
 | **El LED** | Va a 5 V directamente (ánodo común), no por el LDO. Cada color lo cierra a GND un MOSFET (§5.1) |
 
@@ -352,6 +352,22 @@ Cada salto entre módulos pasa por dos contactos IDC y unos centímetros de cabl
 | Controlador | **ESP32-C3 SuperMini**. Usa TX/RX para el bus, 4 SENSE propios y un LED de estado |
 | Alimentación | Entrada USB-C (§7) |
 | Extra | El pull-up de 4,7 kΩ del bus, el diodo Schottky del TX, el polyfuse, el 1000 µF y el TVS |
+
+**Asignación de pines de la SuperMini** (confirmada, la misma en `04_diseno_software.md` §5):
+
+| GPIO | Función | Notas |
+|---|---|---|
+| GPIO21 (TX) | DATA, a través del Schottky 1N5818 (cátodo hacia el TX) | UART0 TX |
+| GPIO20 (RX) | DATA, directo a la línea | UART0 RX |
+| GPIO0 | SENSE L (izquierda) | Entrada con pull-up, como en los módulos |
+| GPIO1 | SENSE R (derecha) | Idem |
+| GPIO3 | SENSE U (arriba) | Idem |
+| GPIO10 | SENSE D (abajo) | Idem |
+| GPIO8 | LED de estado (en la placa de la SuperMini) | — |
+
+Evitar GPIO2, GPIO5, GPIO6 y GPIO9: son de arranque (strapping) o del botón BOOT.
+
+El pull-up de 4,7 kΩ va de DATA a **3V3 de la SuperMini** (único del sistema). Los cuatro SENSE de la base van a sus cuatro box header, igual que en un módulo.
 
 ---
 

@@ -203,6 +203,17 @@ A partir de los puentes JP7/JP8:
 
 ---
 
+### 4.5 Pines de la SuperMini
+
+Misma asignación que `02_diseno_hardware.md` §10. El firmware la usa tal cual:
+
+| GPIO | Función |
+|---|---|
+| GPIO21 (TX) | Bus DATA, a través del Schottky |
+| GPIO20 (RX) | Bus DATA |
+| GPIO0 / GPIO1 / GPIO3 / GPIO10 | SENSE L / R / U / D |
+| GPIO8 | LED de estado |
+
 ## 5. Integración en Home Assistant
 
 ### 5.1 Entidades que publica el componente

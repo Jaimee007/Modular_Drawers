@@ -12,7 +12,7 @@ Versión 2.0 · Octubre 2026 · **Las placas en KiCad: esquemático, layout y fa
 
 | Placa | Tamaño | Cantidad | Estado |
 |---|---|---|---|
-| **Módulo** | ~30 × 30 mm | ~25 montadas | Fase H3 — este documento |
+| **Módulo** | ~30 × 30 mm | 10 en el primer pedido (diseño para hasta 31) | Fase H3 — este documento |
 | **Base (controlador)** | por definir | 1–2 | Después de H3 |
 | **LED** | — | — | **No lleva placa propia**: un LED RGB de 5 mm (ánodo común) con 4 hilos a la tira J6 |
 | *Devboard CH32V003* | 36 × 20,32 mm | 0 | Ejercicio de aprendizaje; **no se pide** |
@@ -190,7 +190,7 @@ PD0 ──┬── R11 (100 kΩ) ── GND
 | TP1 | DATA | — |
 | TP2–TP5 | SENSE L / R / U / D | — |
 | TP6 | **GND** (pinza de masa del analizador) | — |
-| TP7 | Ya no hay pin libre: el punto de test TP7 se elimina o se reasigna (p. ej. +3V3) | — |
+| TP7 | +3V3 (punto de test de la alimentación del micro) | — |
 
 ---
 
@@ -286,7 +286,7 @@ Importables de la devboard (*File → Import Settings from Another Board*):
 
 ### 7.6 Serigrafía
 
-Esta placa se monta ~25 veces y se configura a mano cada una. La serigrafía es la diferencia entre montar de memoria o consultar el esquemático veinticinco veces.
+Esta placa se monta 10 veces en el primer pedido (hasta 31 en el máximo) y se configura a mano cada una. La serigrafía es la diferencia entre montar de memoria o consultar el esquemático veinticinco veces.
 
 | Qué | Dónde |
 |---|---|
@@ -336,9 +336,10 @@ Instala el plugin **Fabrication Toolkit** (*Plugin and Content Manager*). Genera
 
 **Antes de generar:**
 
-1. Campo `LCSC` rellenado en todos los componentes SMD.
+1. Campo `LCSC` rellenado en todos los componentes SMD (U1, U2, Q1–Q3, R1–R11, C1–C4).
 2. **J1–J7 marcados como "excluir del BOM"**: son THT y se sueldan a mano.
 3. C5 en DNP.
+4. **Q1–Q3 (2N7002) y las resistencias del LED confirmados en JLCPCB**, con su tipo Basic/Extended, antes de generar el BOM.
 
 ### 8.2 Verificar antes de pagar
 
@@ -355,7 +356,7 @@ Sube el ZIP a `gerber-viewer.easyeda.com` y revisa capa por capa: contorno cerra
 | Capas / espesor | 2 / 1,6 mm |
 | Acabado | HASL con plomo (más barato y mejor para soldar a mano) |
 | Montaje | **Economic PCBA**, una cara |
-| Cantidad | **~25 unidades** |
+| Cantidad | **10 unidades** (primer pedido; el diseño admite hasta 31 módulos) |
 | Coste estimado | ~45 $ + IVA del 21 % a la entrada |
 
 **Desglose de los costes fijos:** ~8 $ de setup + ~3 $ de feeder por el único componente Extended.
@@ -374,7 +375,7 @@ Y los puentes: cierra con una gota de estaño los de la dirección que toque, m�
 |---|---|---|
 | 1 | ¿Caben los conectores enchufados en los 20 mm de zona trasera? | **Medir** macho+hembra (fase H0) |
 | 2 | ¿Funciona el bus UART half-duplex open-drain? | Fases 3–4 del firmware (H1) |
-| 3 | ¿El LED RGB elegido es de ánodo común y se enciende bien con los MOSFET y las resistencias de §4? | Fase 2 del firmware, con un LED en protoboard |
+| 3 | ¿El LED RGB es de ánodo común y se enciende bien con los 2N7002 y las resistencias de §4? | Fase 2 del firmware, con un LED en protoboard |
 | 4 | ¿Los SENSE y el algoritmo de topología funcionan? | Fase 5 del firmware |
 | 5 | ¿1 kΩ basta en DATA y SENSE? | Fase H2 con 5 módulos |
 
@@ -399,6 +400,6 @@ Los tres tienen algo en común: **la placa funciona, pasa ERC y DRC, y el sistem
 
 **1 · Unir los SENSE.** Rompe el descubrimiento de posición. Verifica las cuatro redes en el net inspector: 3 elementos cada una.
 
-**2 · Comprar un LED de cátodo común.** El circuito de §5.6 supone **ánodo común**. Con un LED de cátodo común no se enciende (o se enciende al revés). Comprueba la polaridad en la ficha y prueba un LED en protoboard antes de pedir las placas.
+**2 · Montar un LED de cátodo común.** El circuito de §5.6 supone **ánodo común** (+5 V en la pata común). Con cátodo común, el LED no enciende o enciende al revés. Comprueba la polaridad en la ficha y con una pila de 3 V y 330 Ω antes de pedir las placas.
 
 **3 · Un condensador grande en la entrada de 5 V.** Enchufar un cajón en marcha reiniciaría a los vecinos, incumpliendo el requisito **R2**. Máximo 10 µF.
