@@ -3,6 +3,8 @@
 *.kicad_prl
 fp-info-cache
 *.net
+*.rpt
+sym-lib-table.bak
 hardware/*/*/fab/
 # PlatformIO
 .pio/
