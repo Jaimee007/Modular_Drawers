@@ -162,7 +162,7 @@ U1 pin 11 (PC1) ── JP1 ── GND     peso 2
 U1 pin 12 (PC2) ── JP2 ── GND     peso 4
 U1 pin 13 (PC3) ── JP3 ── GND     peso 8
 U1 pin 14 (PC4) ── JP4 ── GND     peso 16
-U1 pin  8 (PD0)  libre (antes JP5, peso 32: con 31 módulos ya no hace falta)
+U1 pin  8 (PD0) ── azul del LED (§5.6). Sin puente de dirección de peso 32: con 31 módulos la dirección usa solo JP0–JP4
 U1 pin 15 (PC5) ── JP7 ── GND     pareja a la IZQUIERDA
 U1 pin  1 (PD4) ── JP8 ── GND     pareja ABAJO
 ```
