@@ -146,7 +146,10 @@ La placa de módulo lleva **una sola pieza Extended** (el micro). El 2N7002 (C85
 | MOSFET del LED (Q1–Q3), uno por color | JSCJ 2N7002 (SOT-23, 60 V, 115 mA) | C8545 | Básica | — | Sin leer |
 | Resistencias del LED: 150 Ω, y 100 Ω (×2) | Uni-Royal 0603WAF1500T5E y 0603WAF1000T5E | C22808, C22775 | Básicas | < 0,01 $ | — |
 | Resistencias de puerta 100 kΩ (×3) | Uni-Royal 0603WAF1003T5E | C25803 | Básica | < 0,01 $ | — |
-| Resistencias 1 kΩ, condensadores 100 nF / 1 µF / 10 µF (0603/0805) | Genéricos | Varios | Básicas | < 0,01 $ | — |
+| Resistencias 1 kΩ (0603) | Uni-Royal 0603WAF1001T5E | C21190 | Básica | < 0,01 $ | — |
+| Condensador 100 nF (0603) | 100 nF 50 V X7R | C14663 | Básica | < 0,01 $ | — |
+| Condensador 1 µF (0603) | Samsung CL10A105KB8NNNC, 50 V X5R | C15849 | Básica | < 0,01 $ | — |
+| Condensador 10 µF (0805) | Samsung CL21A106KAYNNNE, 25 V X5R | C15850 | Básica | < 0,01 $ | — |
 | *Solo placa base:* diodo del TX del bus | B5819W SL (SOD-123) | C8598 | Básica | 0,03 $ | ~601 000 |
 | *Solo placa base:* USB-C | TYPE-C-31-M-12 | C165948 | Extendida | 0,19 $ | ~330 000 |
 | *Solo placa base:* resistencias 5,1 kΩ (CC1 y CC2) | Genéricas 0603 | Varios | Básicas | < 0,01 $ | — |

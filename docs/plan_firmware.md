@@ -232,6 +232,21 @@ En PulseView, añade el decodificador UART (115200, 8N1) al canal 0 para ver las
 
 ## Fase 5 · SENSE: descubrimiento de la posición
 
+### 5.0 Prueba previa: solo la capa eléctrica, con dos placas de desarrollo
+
+Se puede validar la parte física de SENSE **antes** de tener el bus DATA y el ESP32, con dos placas CH32V003 de desarrollo (A y B). No cubre `SENSE_DRIVE`, `SENSE_QUERY` ni el mapa: eso va por DATA y se prueba en 5.1–5.3.
+
+Pines (como en 2.4): PA1 (izquierda), PA2 (derecha), PD2 (arriba) y PD3 (abajo), entradas con pull-up, cada una con 1 kΩ en serie. GND común entre las dos placas.
+
+| # | Prueba | Montaje | Resultado esperado |
+|---|---|---|---|
+| 1 | Lectura de un pin | Una placa. Imprime el estado de PA1 cada 200 ms y llévalo a GND con un cable | Lee 0 al llevarlo a GND y 1 al soltarlo |
+| 2 | Dos placas conectadas | PA2 de A a PA1 de B, con 1 kΩ en cada lado. A tira PA2 a 0 (open-drain) o lo suelta; B lee PA1. Repite en sentido contrario | A tira: B lee 0. A suelta: B lee 1. En ningún caso se fuerza un 1 (dos placas tirando a la vez no hacen cortocircuito) |
+| 3 | «Hola» al encender | B arranca y pone sus 4 SENSE a 0 durante 50 ms. A tiene una interrupción en PA2 | A registra el evento al alimentar B con A ya encendida |
+| 4 | Independencia de caras | Solo PA2(A)–PA1(B) conectados. B actúa sobre ese SENSE | PD2 y PD3 de A no cambian (requisito **F6**: los SENSE no se unen entre caras) |
+
+**✅ Prueba de aceptación:** las cuatro pruebas dan el resultado esperado.
+
 ### 5.1 Montaje
 
 Une los SENSE como en la hoja 1 del esquemático. Cada unión lleva una resistencia de 1 kΩ en cada lado.
