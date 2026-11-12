@@ -1,0 +1,8 @@
+* Worst-case SPICE model for the 2N7002 (JSCJ, LCSC C8545). Single subcircuit in its own file.
+* Vgs(th) max = 2.5 V, Rds(on) max = 7 ohm @ Vgs = 5 V, Id = 50 mA -> Kp = 1 / (7 * (5 - 2.5)) = 0.057
+* Pin order: D G S
+
+.subckt 2N7002MAX D G S
+M1 D G S S NM2N7002MAX
+.model NM2N7002MAX NMOS(Level=1 Vto=2.5 Kp=0.057 Lambda=0)
+.ends 2N7002MAX

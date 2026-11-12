@@ -3327,6 +3327,16 @@
 		)
 		(uuid "076ae39b-f2dc-4b92-becd-64c959d71250")
 	)
+	(label "LED_G"
+		(at 67.31 93.98 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1e43f281-1372-4e9e-ba50-750a7d71e016")
+	)
 	(label "SENSE_L"
 		(at 53.34 147.32 0)
 		(effects
@@ -3386,6 +3396,26 @@
 			(justify left bottom)
 		)
 		(uuid "30bdc53a-f1bf-4b9a-9ec4-17ffe79bd534")
+	)
+	(label "LED_B"
+		(at 88.9 96.52 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "339ce55e-1f2a-48a2-ad5f-47e644defec1")
+	)
+	(label "LED_R"
+		(at 45.72 91.44 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "344d30cd-e772-4e61-b7bb-1cfa104e12d2")
 	)
 	(label "PC6"
 		(at 38.1 124.46 90)

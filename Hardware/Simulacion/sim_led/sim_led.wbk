@@ -1,0 +1,67 @@
+{
+  "custom_cursors": 2,
+  "last_sch_text_sim_command": "",
+  "tabs": [
+    {
+      "analysis": "TRAN",
+      "commands": [
+        ".tran 1u 5m",
+        ".kicad adjustpaths",
+        ".save all",
+        ".probe alli",
+        ".probe allp"
+      ],
+      "dottedSecondary": true,
+      "margins": {
+        "bottom": 45,
+        "left": 70,
+        "right": 160,
+        "top": 30
+      },
+      "measurements": [],
+      "showGrid": true,
+      "traces": [
+        {
+          "color": "rgb(255, 255, 51)",
+          "signal": "I(R6)",
+          "trace_type": 258
+        },
+        {
+          "color": "rgb(166, 86, 40)",
+          "signal": "I(R7)",
+          "trace_type": 258
+        },
+        {
+          "color": "rgb(247, 129, 191)",
+          "cursor2": {
+            "position": 0.0031700753498385362,
+            "x_format": "3~s",
+            "y_format": "3~V"
+          },
+          "cursorD": {
+            "x_format": "3~s",
+            "y_format": "3~V"
+          },
+          "signal": "I(R8)",
+          "trace_type": 258
+        },
+        {
+          "color": "rgb(255, 127, 0)",
+          "cursor1": {
+            "position": 0.003218514531754575,
+            "x_format": "3~s",
+            "y_format": "3~A"
+          },
+          "cursorD": {
+            "x_format": "3~s",
+            "y_format": "3~V"
+          },
+          "signal": "V(Net-_Q1-G_)",
+          "trace_type": 257
+        }
+      ]
+    }
+  ],
+  "user_defined_signals": [],
+  "version": 7
+}

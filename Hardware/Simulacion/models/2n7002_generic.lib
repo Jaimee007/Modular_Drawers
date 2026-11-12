@@ -1,0 +1,26 @@
+* SPICE models for the 2N7002 (N-channel MOSFET, SOT-23, LCSC C8545 = JSCJ 2N7002, 60 V, 115 mA).
+* NOT manufacturer models. Level-1 MOSFET fitted by hand to datasheet values.
+* Datasheet values used:
+*   Vgs(th) = 1.0 / 1.6 / 2.5 V (min / typ / max) @ Id = 250 uA
+*   Rds(on) = 1.1 ohm typ, 7 ohm max @ Vgs = 5 V, Id = 50 mA
+*   Rds(on) = 0.9 ohm typ, 5 ohm max @ Vgs = 10 V, Id = 500 mA (not used: different regime)
+* In the triode region Rds ~ 1 / (Kp * (Vgs - Vto)), so:
+*   typ: Kp = 1 / (1.1 * (5 - 1.6)) = 0.27
+*   max: Kp = 1 / (7.0 * (5 - 2.5)) = 0.057
+* Valid for low-current switching at Vgs of 2.7 V to 5 V. Not valid at 10 V / 500 mA.
+*
+* 2N7002     : typical part
+* 2N7002MAX  : worst case (highest Vgs(th), highest Rds(on)); no underscore in the name
+*              because KiCad failed to resolve "2N7002_MAX" as a base model
+*
+* Pin order of the subcircuits: D G S
+
+.subckt 2N7002 D G S
+M1 D G S S NM2N7002
+.model NM2N7002 NMOS(Level=1 Vto=1.6 Kp=0.27 Lambda=0)
+.ends 2N7002
+
+.subckt 2N7002MAX D G S
+M1 D G S S NM2N7002MAX
+.model NM2N7002MAX NMOS(Level=1 Vto=2.5 Kp=0.057 Lambda=0)
+.ends 2N7002MAX

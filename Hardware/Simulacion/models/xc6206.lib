@@ -1,0 +1,16 @@
+* Behavioral DC model of the Torex XC6206P332 (3.3 V LDO, LCSC C5446).
+* NOT a manufacturer model. DC only: it does NOT model stability, PSRR or transient response.
+* Datasheet values used (Ta = 25 C, Vout(T) = 3.3 V):
+*   Vout = 3.234 .. 3.366 V @ 30 mA (typ taken as 3.3 V), Iq = 1 uA typ
+*   Load regulation <= 60 mV (1..100 mA)        -> 0.4 ohm output resistance
+*   Dropout Vdif1 = 75 mV typ @ 30 mA           -> 2.5 ohm pass resistance
+*   Dropout Vdif2 = 250 mV typ @ 100 mA         -> 2.5 ohm pass resistance (consistent)
+* Not modelled: 100 mA short-circuit limit, temperature drift (+-100 ppm/C).
+*
+* Pin order: VIN GND VOUT. Map by pin NAME in KiCad (check the symbol's pin names).
+
+.subckt XC6206P332 VIN GND VOUT
+Rq VIN GND 5Meg
+Vs vint VOUT 0
+Bs vint GND V = min(3.3 - 0.4*i(Vs), v(VIN,GND) - 2.5*i(Vs))
+.ends XC6206P332
