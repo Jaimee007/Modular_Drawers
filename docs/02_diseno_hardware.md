@@ -235,7 +235,7 @@ El LED de 5 mm (difuso) se orienta a ~45°, mirando hacia abajo y hacia delante,
 | Parte | Componentes |
 |---|---|
 | **Entrada (en la base)** | USB-C hembra de 5 V/3 A + polyfuse de 2 A + condensador de 1000 µF + TVS de 5 V. **Alimenta también la SuperMini** por su pin 5V: un solo cable de entrada |
-| **Por módulo** | LDO de 3,3 V (XC6206P332, LCSC C5446) solo para el micro, con 100 nF + 10 µF |
+| **Por módulo** | LDO de 3,3 V (XC6206P332, LCSC C5446) solo para el micro. Entrada: 1 µF cerámico (el que pide Torex). Salida: 10 µF cerámico (CL, estabiliza el LDO) + 2 × 100 nF (desacoplo del micro y de J5) |
 | **El LED** | Va a 5 V directamente (ánodo común), no por el LDO. Cada color lo cierra a GND un MOSFET (§5.1) |
 
 ### 7.2 La trampa del USB-C

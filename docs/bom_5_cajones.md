@@ -136,14 +136,14 @@ Piezas comprobadas en el catálogo de JLCPCB el 23/10/2026. Los precios están e
 - **Básicas (Basic):** sin coste de montaje extra.
 - **Extendidas (Extended):** JLCPCB cobra una tasa fija por cada referencia distinta y pedido (unos 3 $ en sus tarifas habituales; compruébalo en el presupuesto).
 
-La placa de módulo lleva **una pieza Extended confirmada** (el micro) y posiblemente otra (el 2N7002, sin confirmar).
+La placa de módulo lleva **una sola pieza Extended** (el micro). El 2N7002 (C8545) es Basic.
 
 | Función | Pieza | Código JLC/LCSC | Tipo | Precio (1–49) | Stock |
 |---|---|---|---|---|---|
 | Microcontrolador | CH32V003F4P6 (TSSOP-20) | C5187096 | Extendida | 0,31 $ (0,24 $ a partir de 50) | ~29 600 |
 | LDO 3,3 V | XC6206P332MR-G (SOT-23) | C5446 | Básica | 0,15 $ | ~462 000 |
 | LDO 3,3 V (alternativa) | AMS1117-3.3 (SOT-223) | C6186 | Básica | 0,21 $ | ~987 000 |
-| MOSFET del LED (Q1–Q3), uno por color | 2N7002 (SOT-23) | C8545 | Sin confirmar (Basic/Extended) | — | Sin leer |
+| MOSFET del LED (Q1–Q3), uno por color | JSCJ 2N7002 (SOT-23, 60 V, 115 mA) | C8545 | Básica | — | Sin leer |
 | Resistencias del LED: 150 Ω, y 100 Ω (×2) | Uni-Royal 0603WAF1500T5E y 0603WAF1000T5E | C22808, C22775 | Básicas | < 0,01 $ | — |
 | Resistencias de puerta 100 kΩ (×3) | Uni-Royal 0603WAF1003T5E | C25803 | Básica | < 0,01 $ | — |
 | Resistencias 1 kΩ, condensadores 100 nF / 1 µF / 10 µF (0603/0805) | Genéricos | Varios | Básicas | < 0,01 $ | — |
@@ -276,7 +276,7 @@ Pedido de partida: **10 módulos + la base**. La base va en **placa perforada**,
 - **Alimentar por la SuperMini:** no he verificado cuánta corriente aguanta su pin de 5 V, ni qué pasa si enchufas a la vez su USB-C.
 - **Pines del ESP32:** `04_diseno_software.md` no fija TX, RX ni los cuatro SENSE. GPIO5 y GPIO6 son pines de strapping en la SuperMini.
 - **LED RGB:** el diseño ya usa ánodo común con un MOSFET por color. Comprueba que el LED comprado es de ánodo común y prueba uno en protoboard con las resistencias de `03_diseno_pcb.md` §4 antes de pedir las placas.
-- **2N7002 en JLCPCB:** el código es C8545, pero no he confirmado si es Basic o Extended ni su stock.
+- **2N7002 en JLCPCB:** el código es C8545 (JSCJ), confirmado como Basic. Falta comprobar su stock.
 - **PWM en PC6, PC7 y PD0:** no está comprobado que los tres tengan PWM por hardware. Si no, el PWM es por software.
 - **Adaptador USB-C:** el anuncio no menciona las 5,1 kΩ. Añádelas y mide CC1/CC2 antes de cablear.
 

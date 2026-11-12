@@ -81,14 +81,14 @@ Los `.kicad_sch`, `.kicad_pcb`, `.kicad_pro` y `.kicad_sym` **sí** van a git: s
 |---|---|---|---|---|
 | U1 | CH32V003F4P6 | `Package_SO:TSSOP-20_4.4x6.5mm_P0.65mm` | C5187096 | **Extended** |
 | U2 | XC6206P332MR | `Package_TO_SOT_SMD:SOT-23` | C5446 | Basic |
-| C1 | 100 nF | `Capacitor_SMD:C_0603_1608Metric` | genérico | Basic |
-| C2 | 10 µF | `Capacitor_SMD:C_0805_2012Metric` | genérico | Basic |
-| C3 | 1 µF | `C_0603_1608Metric` | genérico | Basic |
-| C4 | 100 nF | `C_0603_1608Metric` | genérico | Basic |
+| C1 | 100 nF, desacoplo en +3V3 | `Capacitor_SMD:C_0603_1608Metric` | genérico | Basic |
+| C2 | 10 µF, salida del LDO (CL) | `Capacitor_SMD:C_0805_2012Metric` | genérico | Basic |
+| C3 | 1 µF, entrada del LDO (Cin) | `C_0603_1608Metric` | genérico | Basic |
+| C4 | 100 nF, desacoplo en +3V3 | `C_0603_1608Metric` | genérico | Basic |
 | C5 | 100 nF antirrebote (**DNP**) | `C_0603_1608Metric` | genérico | Basic |
 | R1 | 1 kΩ serie en DATA | `Resistor_SMD:R_0603_1608Metric` | genérico | Basic |
 | R2–R5 | 1 kΩ serie en SENSE L/R/U/D | `R_0603_1608Metric` | genérico | Basic |
-| Q1–Q3 | MOSFET N 2N7002 (uno por color del LED) | `Package_TO_SOT_SMD:SOT-23` | C8545 | Sin confirmar (Basic/Extended) |
+| Q1–Q3 | MOSFET N 2N7002 (uno por color del LED) | `Package_TO_SOT_SMD:SOT-23` | C8545 (JSCJ 2N7002, 60 V, 115 mA) | Basic |
 | R6 | 150 Ω, rojo del LED | `R_0603_1608Metric` | C22808 (Uni-Royal 0603WAF1500T5E) | Basic |
 | R7, R8 | 100 Ω, verde y azul del LED | `R_0603_1608Metric` | C22775 (Uni-Royal 0603WAF1000T5E) | Basic |
 | R9–R11 | 100 kΩ, puerta a GND de Q1–Q3 | `R_0603_1608Metric` | C25803 (Uni-Royal 0603WAF1003T5E) | Basic |
@@ -101,7 +101,7 @@ Los `.kicad_sch`, `.kicad_pcb`, `.kicad_pro` y `.kicad_sym` **sí** van a git: s
 | J7 | Tira 1×2 — final de carrera | `PinHeader_1x02_P2.54mm_Vertical` | — | THT |
 | TP1–TP7 | Puntos de test | `TestPoint:TestPoint_Pad_D1.5mm` | — | — |
 
-**Una sola pieza Extended** (el micro), y posiblemente el 2N7002 → de uno a dos feeders de ~3 $. El LED no va en esta placa, así que no tiene feeder. **Los códigos del 2N7002 y de las resistencias salen del catálogo de JLCPCB; falta confirmar que el 2N7002 es Basic y que las resistencias de 100 Ω, 150 Ω y 100 kΩ siguen en stock.**
+**Una sola pieza Extended** (el micro) → un feeder de ~3 $. El 2N7002 (C8545) es Basic. El LED no va en esta placa, así que no tiene feeder. **Los códigos de las resistencias salen del catálogo de JLCPCB; falta confirmar que las de 100 Ω, 150 Ω y 100 kΩ siguen en stock.**
 
 ---
 
@@ -122,6 +122,10 @@ pin 6 de J1–J4  ──┘
 pin 1 de J1–J4  ──┬── GND
 pin 5 de J1–J4  ──┘
 ```
+
+El XC6206 pide (datasheet de Torex, circuito típico) **1 µF cerámico en la entrada y 1 µF cerámico en la salida**. C3 (1 µF) cumple la entrada; el C2 (10 µF) cumple la salida con margen. Todos cerámicos X5R/X7R, nunca Y5V.
+
+Colocación: C3 junto a VIN/GND de U2; C2 junto a VOUT/GND de U2; C1 y C4 junto a VDD/VSS de U1. Un cerámico de 1 µF en 0603 pierde capacidad con la tensión aplicada: C3 de 10 V o más.
 
 Los pines 2 y 6 son la misma red, igual que el 1 y el 5. La duplicación es para repartir corriente y lo que importa es el layout (§7).
 
@@ -339,7 +343,7 @@ Instala el plugin **Fabrication Toolkit** (*Plugin and Content Manager*). Genera
 1. Campo `LCSC` rellenado en todos los componentes SMD (U1, U2, Q1–Q3, R1–R11, C1–C4).
 2. **J1–J7 marcados como "excluir del BOM"**: son THT y se sueldan a mano.
 3. C5 en DNP.
-4. **Q1–Q3 (2N7002) y las resistencias del LED confirmados en JLCPCB**, con su tipo Basic/Extended, antes de generar el BOM.
+4. **Las resistencias del LED confirmadas en JLCPCB** (tipo Basic/Extended y stock) antes de generar el BOM. Q1–Q3 (C8545) ya están confirmados como Basic.
 
 ### 8.2 Verificar antes de pagar
 

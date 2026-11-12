@@ -9,3 +9,9 @@ hardware/*/*/fab/
 # PlatformIO
 .pio/
 .vscode/
+
+# KiCad lock files and local history
+~*.kicad_*.lck
+*.kicad_*.lck
+*.lck
+.history/

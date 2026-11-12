@@ -208,7 +208,7 @@ Recomendación: **SK6812 RGBW** si te importa ver bien los componentes al abrir;
 | Parte | Componentes |
 |---|---|
 | Entrada (en la base) | USB-C 5 V / 3 A + polyfuse de 2 A + condensador de 1000 µF + diodo TVS de 5 V |
-| Por módulo | LDO de 3,3 V (XC6206P332 o AP2112K-3.3) solo para el micro; condensadores de 10 µF y 100 nF. **Sin** condensadores grandes, para limitar el pico de corriente al enchufar un módulo en marcha |
+| Por módulo | LDO de 3,3 V (XC6206P332 o AP2112K-3.3) solo para el micro; condensadores de 1 µF en la entrada, y 10 µF y 2 × 100 nF en la salida. **Sin** condensadores grandes, para limitar el pico de corriente al enchufar un módulo en marcha |
 | Consumo en reposo | ~3–5 mA por módulo (64 módulos ≈ 0,3 A) |
 | Consumo con LED | ~20–40 mA por LED encendido con el brillo limitado |
 
