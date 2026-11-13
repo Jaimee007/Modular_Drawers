@@ -12,7 +12,7 @@ Cada fase termina con una **prueba de aceptación**. No pases a la siguiente has
 |---|---|---|---|
 | 0 | Preparar el entorno y el repositorio | PC, WCH-LinkE | 1–2 h |
 | 1 | Primer programa: parpadeo y `printf` | 1 placa CH32V003 + LED | 1 h |
-| 2 | Periféricos del cajón, uno a uno | + LED RGBW, final de carrera, jumpers | 3–4 h |
+| 2 | Periféricos del cajón, uno a uno | + LED RGB con 3 MOSFET, final de carrera, jumpers | 3–4 h |
 | 3 | Bus DATA: el ESP32 habla con un cajón | + ESP32-C3, diodo, resistencias | 4–6 h |
 | 4 | Dos cajones en el mismo bus | 2.ª placa CH32V003 | 1–2 h |
 | 5 | SENSE: descubrimiento de la posición | Cables entre placas | 3–4 h |
@@ -72,7 +72,7 @@ upload_protocol = minichlink
 
 - **Memoria:** ocupa muy poco, y el micro solo tiene 16 KB de flash y 2 KB de RAM.
 - **Control:** da acceso directo al UART en modo half-duplex, que es lo que necesita el bus.
-- **Ejemplos:** trae ejemplos de WS2812 por SPI+DMA.
+- **Ejemplos:** trae ejemplos de GPIO, temporizadores (PWM) y UART. El LED es RGB normal con MOSFET, no direccionable, así que no se usan los ejemplos de WS2812.
 
 La placa también admite el framework Arduino (`framework = arduino`) si en algún momento lo prefieres. Como subidor, `minichlink` es el propio de ch32v003fun; `wch-link` (OpenOCD) también funciona.
 
@@ -109,7 +109,7 @@ Las dos `build_flags` hacen que el `Serial` del ESP32-C3 SuperMini salga por su 
 
 ### 1.2 Parpadeo
 
-1. Pon un LED con su resistencia de 330 Ω en **PD4**. Es un pin libre en el diseño final; si tu placa ya trae un LED, usa ese.
+1. Usa el LED que ya trae la placa de desarrollo. Si no, pon un LED con su resistencia de 330 Ω en **PD4**; vale solo para esta prueba, porque en el diseño final PD4 es el puente «pareja abajo» (JP8).
 2. Copia el ejemplo *blink* de ch32v003fun en `src/main.c`, cambiando el pin.
 3. Pulsa **Upload** (→) en PlatformIO.
 
@@ -127,16 +127,24 @@ ch32v003fun puede enviar `printf` a través del mismo hilo SWIO que se usa para 
 
 ## Fase 2 · Periféricos del cajón, uno a uno
 
-Monta en la protoboard los componentes según la **hoja 2 del esquemático**. Cada prueba es un pequeño programa (o una opción de un menú) que se puede volver a usar más adelante para revisar una placa.
+Monta en la protoboard los componentes según `02_diseno_hardware.md` (§5 LED, §6 final de carrera, §4 puentes) y `06_montaje_protoboard.md`. Cada prueba es un pequeño programa (o una opción de un menú) que se puede volver a usar más adelante para revisar una placa.
 
-### 2.1 LED RGBW (PC6)
+### 2.1 LED RGB (PC6, PC7 y PD0)
 
-- **Conexión:** LED con su diodo (1N4148) en la alimentación, condensador de 100 nF y resistencia de 330 Ω en DIN.
-- **Para empezar,** usa el ejemplo de WS2812 de ch32v003fun (SPI+DMA en PC6).
-- **RGBW:** el SK6812**RGBW** necesita **4 bytes por LED** (G, R, B, W) en vez de 3. Hay que adaptar el ejemplo para enviar 32 bits por LED.
-- **Prueba:** ciclo rojo → verde → azul → blanco (canal W) → apagado.
+- **Conexión** (`02_diseno_hardware.md` §5.1): LED RGB de 5 mm de **ánodo común**, con el común a +5 V. Cada color va por una resistencia (150 Ω el rojo, 100 Ω el verde y el azul) al drenador de un 2N7002; la fuente a GND y la puerta al pin del micro, con 100 kΩ de la puerta a GND.
 
-**✅ Prueba de aceptación:** los cuatro colores salen limpios, sin parpadeos raros, y el blanco del canal W es claramente distinto del blanco RGB.
+  | Color | Pin del micro |
+  |---|---|
+  | Rojo | PC6 |
+  | Verde | PC7 |
+  | Azul | PD0 |
+
+- **Lógica directa:** pin a 1 = color encendido.
+- **PWM:** comprueba que PC6, PC7 y PD0 admiten PWM por hardware (temporizadores TIM1/TIM2, con remapeo). Si no, hazlo por software.
+- **Si aún no tienes los 2N7002** (son SOT-23), deja esta prueba para la PCB: el LED no se puede conectar directamente a los pines del micro.
+- **Prueba:** ciclo rojo → verde → azul → blanco (R + G + B) → apagado.
+
+**✅ Prueba de aceptación:** los tres colores salen limpios, sin parpadeos raros, y el blanco (R + G + B) se reconoce como blanco. Mide la corriente de cada color: ≈ 17–20 mA.
 
 ### 2.2 Final de carrera (PD6)
 
@@ -146,13 +154,14 @@ Monta en la protoboard los componentes según la **hoja 2 del esquemático**. Ca
 
 **✅ Prueba de aceptación:** 50 aperturas y cierres seguidos generan exactamente 100 eventos (no aparecen eventos duplicados por rebotes).
 
-### 2.3 Jumpers de dirección y de tamaño
+### 2.3 Puentes de dirección y de emparejamiento
 
-- **Pines:** PC0–PC4 y PD0 para la dirección (bits 0–5) y PC5 para el tamaño, todos con pull-up interna. En la protoboard, un jumper a GND equivale a un puente cerrado.
-- **Lectura:** se leen una sola vez al arrancar: `dirección = suma de los bits a 0`.
-- **Prueba:** al arrancar se imprimen la dirección y el tamaño. Si la dirección es 0, el LED parpadea en ámbar.
+- **Dirección:** PC0–PC4 (bits 0–4, pesos 1, 2, 4, 8 y 16), con pull-up interna. En la protoboard, un cable a GND equivale a un puente cerrado. PD0 **no** es de dirección: es el LED azul.
+- **Emparejamiento:** PC5 = JP7 (el cajón continúa a la izquierda) y PD4 = JP8 (continúa hacia abajo), también con pull-up y cerrados a GND.
+- **Lectura:** una sola vez al arrancar. `dirección = suma de los pesos de los puentes cerrados` (1–31). Con todos abiertos, la dirección es 0 («sin configurar»).
+- **Prueba:** al arrancar se imprimen la dirección y el emparejamiento. Si la dirección es 0, el LED parpadea en ámbar.
 
-**✅ Prueba de aceptación:** las direcciones 1, 2, 21 y 63 y el tamaño 1×1/2×1 se leen bien. Con la dirección 0 el LED parpadea en ámbar.
+**✅ Prueba de aceptación:** las direcciones 1, 2, 21 y 31 y los dos puentes de emparejamiento se leen bien. Con la dirección 0 el LED parpadea en ámbar.
 
 ### 2.4 Pines SENSE (lectura básica)
 
@@ -171,8 +180,8 @@ Monta en la protoboard los componentes según la **hoja 2 del esquemático**. Ca
 |---|---|
 | GND común | ESP32, CH32V003 y WCH-LinkE |
 | Pull-up del bus | 4,7 kΩ entre DATA y 3V3 (solo en la base) |
-| ESP32 GPIO6 (RX1) | Directo a DATA |
-| ESP32 GPIO5 (TX1) | A DATA a través de un diodo B5819W (cátodo hacia GPIO5) |
+| ESP32 GPIO20 (RX) | Directo a DATA |
+| ESP32 GPIO21 (TX) | A DATA a través de un diodo Schottky (cátodo hacia GPIO21) |
 | CH32V003 PD5 | A DATA a través de 1 kΩ |
 
 Alimentación en la protoboard: el ESP32 por USB y el CH32V003 desde el 3V3 del ESP32. Más adelante, el LDO del cajón.
@@ -191,12 +200,12 @@ Alimentación en la protoboard: el ESP32 por USB y el CH32V003 desde el 3V3 del 
 
 ### 3.3 Lado del ESP32 (`base_test`)
 
-- `Serial1.begin(115200, SERIAL_8N1, 6, 5)`, es decir, RX en GPIO6 y TX en GPIO5.
+- `Serial1.begin(115200, SERIAL_8N1, 20, 21)`, es decir, RX en GPIO20 y TX en GPIO21 (los pines de `02_diseno_hardware.md` §10). Con `ARDUINO_USB_CDC_ON_BOOT=1`, `Serial` sigue saliendo por el USB-C.
 - También tiene que descartar su propio eco (lo que envía lo recibe por RX).
 - Un pequeño menú por el monitor serie para lanzar las pruebas:
   ```
   ping 1          → PING al cajón 1
-  led 1 0 0 255 0 → cajón 1 en azul (R G B W)
+  led 1 0 0 255   → cajón 1 en azul (R G B)
   state 1         → estado (abierto/cerrado)
   stress 1 1000   → 1000 PING seguidos y recuento de errores
   ```
@@ -249,7 +258,7 @@ Pines (como en 2.4): PA1 (izquierda), PA2 (derecha), PD2 (arriba) y PD3 (abajo),
 
 ### 5.1 Montaje
 
-Une los SENSE como en la hoja 1 del esquemático. Cada unión lleva una resistencia de 1 kΩ en cada lado.
+Une los SENSE como en `06_montaje_protoboard.md` §2.3. Cada unión lleva una resistencia de 1 kΩ en cada lado.
 
 | Desde | Hasta |
 |---|---|
@@ -323,12 +332,12 @@ Deja el sistema funcionando **24 horas**:
 ### 7.1 Componente externo
 
 1. Pasa la lógica de `base_test` (bus, sondeo y mapa) a un **componente externo de ESPHome** en C++: `esphome/components/cajonera/`.
-2. Usa el UART de ESPHome en GPIO5/6, sin cambios en el hardware.
+2. Usa el UART de ESPHome en GPIO20/21, sin cambios en el hardware.
 3. Por cada cajón detectado, el componente publica:
 
 | Entidad | Uso |
 |---|---|
-| `light.cajon_NN` | RGBW, con efectos de parpadeo |
+| `light.cajon_NN` | RGB, con efectos de parpadeo |
 | `binary_sensor.cajon_NN_abierto` | Estado del cajón |
 | `text.cajon_NN_contenido` | Lo que guarda; se queda guardado en el ESP32 |
 | `sensor.cajon_NN_x`, `sensor.cajon_NN_y`, `sensor.cajon_NN_tamano` | Posición y tamaño |
@@ -389,7 +398,7 @@ Commit "Integración ESPHome".
 | No detecta el chip | SWIO o GND mal conectados, o placa sin alimentación | Comprobar las 3 conexiones; probar con el 3V3 del WCH-LinkE |
 | El ESP32 recibe basura | Falta GND común, o no se descarta el eco | Unir las masas; descartar los bytes propios |
 | El cajón no responde nunca | PD5 no está en open-drain, o falta HDSEL | Revisar la configuración del USART; mirar la línea con el analizador |
-| Colores mal o el LED no hace caso | Trama de 24 bits en un LED RGBW, o problema de nivel de la señal | Enviar 32 bits por LED; comprobar el diodo en la alimentación del LED |
+| Colores mal o el LED no hace caso | LED de cátodo común, 2N7002 con los pines G/S/D cruzados, o pin sin PWM | Comprobar la polaridad del LED y el pinout del MOSFET; mirar la puerta con el analizador |
 | Eventos dobles al abrir | Rebotes del interruptor | Subir el filtro a 30–40 ms |
 | SENSE siempre a 0 | Pull-up sin activar, o pin configurado como salida | Revisar la configuración del pin al arrancar y tras `SENSE_RELEASE` |
-| El mapa sale incoherente | Cable SENSE cruzado o tabla de conectores incorrecta | Comprobar las conexiones contra la hoja 1; revisar la tabla del plan (§2.3) |
+| El mapa sale incoherente | Cable SENSE cruzado o tabla de conectores incorrecta | Comprobar las conexiones contra `06_montaje_protoboard.md` §2.3 |

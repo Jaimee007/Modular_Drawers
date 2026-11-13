@@ -316,7 +316,7 @@ Cada fase termina con una **prueba de aceptación**. No pasar a la siguiente has
 
 ```
 ping 1            → PING al módulo 1
-led 1 0 0 255 0   → módulo 1 en azul (R G B W)
+led 1 0 0 255     → módulo 1 en azul (R G B)
 state 1           → estado (abierto/cerrado)
 stress 1 1000     → 1000 PING seguidos y recuento de errores
 ```
