@@ -15,7 +15,7 @@ Versión 1.0 · Noviembre 2026 · **Tabla de conexiones para las fases 3, 4 y 5 
 | ESP32-C3 SuperMini | 1 | Alimentada por su USB-C durante las pruebas |
 | Placa de desarrollo CH32V003 (`Hardware/devboard_ch32v003`) | 2 | Cajón A (dirección 1) y cajón B (dirección 2) |
 | WCH-LinkE | 1 | Para grabar; de una placa en una placa |
-| Resistencia 1 kΩ | 8 | 2 en DATA (una por cajón) y 6 en SENSE (ver §2.3) |
+| Resistencia 1 kΩ | 6 | 2 en DATA (una por cajón) y 4 en SENSE (2 por unión, ver §2.3) |
 | Resistencia 4,7 kΩ | 1 | Único pull-up de DATA |
 | Diodo Schottky (1N5819 del pedido) | 1 | En el TX de la SuperMini |
 | Cables Dupont | los necesarios | Los jumpers de dirección van a GND |

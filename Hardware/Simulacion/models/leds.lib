@@ -1,11 +1,11 @@
 * SPICE diode models for the Multicomp Pro MP017043 RGB LED (common anode).
-* Fitted by hand from datasheet values, N fixed to 2.
-* Red:   Vf = 2.00 V @ 20 mA, 1.85 V @ 5 mA (datasheet curve)  -> Rs fitted
-* Green: Vf = 3.20 V @ 20 mA (table). The datasheet lists the material as InGaN, which
-*        matches the table; the 2.1 V curve reading was discarded. Using the same
-*        shape as blue (no reliable 5 mA point). Verify on the bench.
-* Blue:  Vf = 3.20 V @ 20 mA (table), 3.00 V @ 5 mA (datasheet curve). Verify on the bench.
+* N fixed to 2; Rs kept from the datasheet fit; Is refitted to bench measurements.
+* Measured on the bench with a 6 V supply, one colour at a time:
+*   Red:   Vf = 1.923 V @ 19.64 mA
+*   Green: Vf = 2.92  V @ 19.2  mA   (datasheet table said 3.2 V, curve said 2.1 V)
+*   Blue:  Vf = 2.93  V @ 19.3  mA   (datasheet table said 3.2 V)
+* The 5 mA points from the datasheet curves are no longer used.
 
-.model LED_R D(Is=2.37e-18 N=2 Rs=5.2)
-.model LED_G D(Is=7.2e-28 N=2 Rs=8.6)
-.model LED_B D(Is=7.2e-28 N=2 Rs=8.6)
+.model LED_R D(Is=9.94e-18 N=2 Rs=5.2)
+.model LED_G D(Is=1.39e-25 N=2 Rs=8.6)
+.model LED_B D(Is=1.17e-25 N=2 Rs=8.6)
