@@ -152,5 +152,5 @@ Analizador lógico (fase 3, `plan_firmware.md` §3.4): DATA, y SENSE L y R de un
 ## 8. Pendiente
 
 - **Unificado con `plan_firmware.md`:** el bus va en GPIO20 (RX) y GPIO21 (TX), como en `02`, `04` y `05`; el LED es RGB con tres MOSFET (PC6, PC7, PD0) y la dirección tiene 5 bits (PC0–PC4).
-- **Los docs dicen que GPIO5 y GPIO6 son pines de strapping** (`02_diseno_hardware.md` §10, `05_montaje_base.md` §2, `bom_5_cajones.md`). Según mi conocimiento, en el ESP32-C3 los de strapping son GPIO2, GPIO8 y GPIO9, y GPIO4–GPIO7 son de JTAG. No lo he comprobado con la datasheet: confírmalo. Si es así, GPIO20/21 se mantienen, pero GPIO8 (LED de estado) y GPIO9 (BOOT) sí merecen cuidado.
+- **Strapping del ESP32-C3:** GPIO2, GPIO8 y GPIO9 (datasheet de Espressif). Los docs decían GPIO5 y GPIO6, que era un error y ya está corregido en `02_diseno_hardware.md` §10.
 - **`plan_cajonera_modular.md`** se archivó en `docs/archivo/` con un aviso de que no es vigente; manda `02_diseno_hardware.md`.

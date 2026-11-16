@@ -192,7 +192,17 @@ A partir de los puentes JP7/JP8:
 4. Un grupo expone **una sola entidad de cajón** en Home Assistant.
 5. Una orden de iluminación al grupo se envía a **todos** sus módulos.
 
-### 4.4 Límites
+### 4.4 La base también es un cajón
+
+El ESP32 de la base lleva **su propio LED RGB y su propio final de carrera** (`02_diseno_hardware.md` §10: LED en GPIO4, 5 y 7, final de carrera en GPIO6). **La lógica va en el mismo firmware que controla el bus**: un único programa en el ESP32, con una tarea para el bus y otra para el LED y el final de carrera. Aplica la **misma lógica que un módulo** (§3.3 y §3.4), sin pasar por el bus:
+
+- Al detectar la apertura, enciende su LED en blanco al instante, sin consultar a nadie.
+- Obedece las órdenes del propio controlador (búsqueda, error, identificar) con la misma prioridad que un módulo.
+- Se publica en Home Assistant como un cajón más, en la posición (0,0).
+
+El programa de banco `base_rgb_led` prueba el circuito por separado (`07_pruebas_banco.md`); en el firmware definitivo su código se integra con el del bus en las fases 6 y 7.
+
+### 4.5 Límites
 
 | Límite | Valor |
 |---|---|
@@ -202,11 +212,11 @@ A partir de los puentes JP7/JP8:
 
 ---
 
-### 4.5 Pines de la SuperMini
+### 4.6 Pines de la SuperMini
 
 La asignación de pines está **solo** en `02_diseno_hardware.md` §10; esa tabla es la única fuente y el firmware la usa tal cual. No se repite aquí para que no pueda divergir.
 
-Resumen: el bus va por UART0 (GPIO20 RX, GPIO21 TX), los cuatro SENSE por GPIO0, 1, 3 y 10, y el LED de estado es el de la propia SuperMini.
+Resumen: el bus va por UART0 (GPIO20 RX, GPIO21 TX), los cuatro SENSE por GPIO0, 1, 3 y 10, el LED RGB por GPIO4, 5 y 7, el final de carrera por GPIO6, y el LED de estado es el de la propia SuperMini.
 
 ## 5. Integración en Home Assistant
 

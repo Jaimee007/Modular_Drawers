@@ -350,6 +350,7 @@ Cada salto entre módulos pasa por dos contactos IDC y unos centímetros de cabl
 |---|---|
 | Carcasa | Un módulo normal con los mismos cuatro conectores y la misma cola de milano |
 | Controlador | **ESP32-C3 SuperMini**. Usa TX/RX para el bus, 4 SENSE propios y un LED de estado |
+| Cajón propio | La base es también un cajón: lleva **su propio LED RGB** (tres MOSFET, como en un módulo) y **su propio final de carrera** |
 | Alimentación | Entrada USB-C (§7) |
 | Extra | El pull-up de 4,7 kΩ del bus, el diodo Schottky del TX, el polyfuse, el 1000 µF y el TVS |
 
@@ -363,9 +364,15 @@ Cada salto entre módulos pasa por dos contactos IDC y unos centímetros de cabl
 | GPIO1 | SENSE R (derecha) | Idem |
 | GPIO3 | SENSE U (arriba) | Idem |
 | GPIO10 | SENSE D (abajo) | Idem |
-| GPIO8 | LED de estado (en la placa de la SuperMini) | — |
+| GPIO8 | LED de estado (en la placa de la SuperMini) | **Strapping**: no forzarlo a bajo al arrancar |
+| GPIO4 | LED rojo (puerta del MOSFET, PWM) | Lógica directa: 1 = encendido |
+| GPIO5 | LED verde (puerta del MOSFET, PWM) | Idem |
+| GPIO7 | LED azul (puerta del MOSFET, PWM) | Idem |
+| GPIO6 | Final de carrera | COM a GND, NO al pin, con la pull-up interna |
 
-Evitar GPIO2, GPIO5, GPIO6 y GPIO9: son de arranque (strapping) o del botón BOOT.
+**Pines que no se usan:** GPIO2, GPIO8 y GPIO9 son de arranque (*strapping*): el chip los lee al reiniciarse para decidir cómo arrancar, y GPIO9 es además el botón BOOT de la SuperMini. GPIO8 solo se usa para el LED de estado de la propia placa. Fuente: datasheet del ESP32-C3 de Espressif, «Strapping Pins».
+
+El LED RGB y el final de carrera de la base se prueban con `base_rgb_led` (`07_pruebas_banco.md`).
 
 El pull-up de 4,7 kΩ va de DATA a **3V3 de la SuperMini** (único del sistema). Los cuatro SENSE de la base van a sus cuatro box header, igual que en un módulo.
 

@@ -4,7 +4,7 @@ Versión 1.0 · Noviembre 2026 · **Guía de montaje del módulo base (controlad
 
 > **Alcance.** Cómo montar la base del prototipo en placa perforada de doble cara metalizada, con la SuperMini enchufada. Implementa `02_diseno_hardware.md` §10 y usa la asignación de pines de `04_diseno_software.md` §4.5.
 >
-> La base se pasa a PCB después de la fase H3, si el prototipo funciona.
+> **La base no se pasa a PCB**: es una sola unidad y pedir una placa para una pieza no sale rentable, así que se queda en placa perforada. La base es además un cajón más: lleva su propio LED RGB y su final de carrera (`02_diseno_hardware.md` §10).
 
 ---
 
@@ -25,6 +25,11 @@ Versión 1.0 · Noviembre 2026 · **Guía de montaje del módulo base (controlad
 | TVS P6KE6V8A | 1 | Farnell 2981330 |
 | Electrolítico 1000 µF 16 V (KSY108M016S1G5H15K) | 1 | Farnell 2901345 |
 | Cerámico 100 nF, de patillas | 2 | Farnell (ver BOM) |
+| LED RGB de 5 mm, ánodo común | 1 | Ver `bom_5_cajones.md` §8 |
+| MOSFET N lógico (2N7002 en adaptador SOT-23, BS170 o RFD14N05L) | 3 | El de la PCB es el 2N7002; en perforada vale un MOSFET de patillas (comprobar el pinout) |
+| Resistencias del LED: 150 Ω (rojo), 100 Ω (verde y azul) | 3 | Mismas que la PCB |
+| Resistencias 100 kΩ (puerta a GND) | 3 | Mismas que la PCB |
+| Microinterruptor (final de carrera) | 1 | Farnell DM1-01P-30-3 |
 | Cable de 22 AWG (silicona) | 1 m | Farnell o casa |
 | Cable de 26 AWG (silicona) | — | Para señales |
 
@@ -48,8 +53,10 @@ La asignación de GPIO es la de `02_diseno_hardware.md` §10 (**fuente única**;
 | GPIO3 | SENSE U | Box header U, pin 4 |
 | GPIO10 | SENSE D | Box header D, pin 4 |
 | GPIO8 | LED de estado (en la SuperMini) | — |
+| GPIO4 / GPIO5 / GPIO7 | LED rojo / verde / azul | Puerta de su MOSFET (100 kΩ de la puerta a GND); drenador a su resistencia y al cátodo del color |
+| GPIO6 | Final de carrera | COM a GND, NO al pin |
 
-Evitar GPIO2, GPIO5, GPIO6 y GPIO9.
+Evitar GPIO2, GPIO8 (salvo el LED de estado de la placa) y GPIO9: son pines de arranque (*strapping*) o el botón BOOT.
 
 ---
 
@@ -73,6 +80,12 @@ Evitar GPIO2, GPIO5, GPIO6 y GPIO9.
       GPIO3  ──[1 kΩ]──► SENSE U ──► pin 4 de box header U
       GPIO10 ──[1 kΩ]──► SENSE D ──► pin 4 de box header D
       GND    ────────────────────── GND común
+
+  LED RGB y final de carrera de la base (mismo circuito que un módulo)
+      +5V ──► ánodo común del LED
+      cátodo de cada color ──[150/100/100 Ω]──► DRAIN del MOSFET (source a GND)
+      GPIO4 (rojo) / GPIO5 (verde) / GPIO7 (azul) ──► GATE   (100 kΩ de cada GATE a GND)
+      GPIO6 ──► NO del microinterruptor   (COM a GND)
 ```
 
 Notas del esquema:
@@ -89,7 +102,8 @@ Notas del esquema:
 3. **Entrada de alimentación.** Adaptador USB-C, polyfuse, TVS y electrolítico en el raíl de 5 V; el TVS y el electrolítico van a GND.
 4. **Bus DATA.** Pull-up 4,7 kΩ, Schottky y los cuatro pines de DATA de los box header en la misma línea.
 5. **SENSE.** Cuatro resistencias de 1 kΩ, cada una a su box header. Mide continuidad: cada SENSE debe ir solo a su conector.
-6. **Cerámicos de 100 nF** cerca de la alimentación de la SuperMini.
+6. **LED RGB y final de carrera.** Tres MOSFET con su resistencia de puerta (100 kΩ a GND) y su resistencia de color, el ánodo común a +5 V y el microinterruptor entre GPIO6 y GND. Comprueba el pinout de los MOSFET con el multímetro en modo diodo antes de alimentar.
+7. **Cerámicos de 100 nF** cerca de la alimentación de la SuperMini.
 
 ---
 
@@ -130,4 +144,4 @@ Si una medida falla, no enchufes nada.
 
 ## 8. Lo que no cambia con respecto a la PCB futura
 
-Los nombres de los pines, las resistencias y las posiciones de los box header se mantienen. Si la base se pasa a PCB, el esquema de §3 es la base del layout.
+Los nombres de los pines, las resistencias y las posiciones de los box header coinciden con los de la placa de módulo (`03_diseno_pcb.md`), para que la base se comporte como un módulo más.

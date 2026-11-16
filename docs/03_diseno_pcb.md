@@ -13,7 +13,7 @@ Versión 2.0 · Octubre 2026 · **Las placas en KiCad: esquemático, layout y fa
 | Placa | Tamaño | Cantidad | Estado |
 |---|---|---|---|
 | **Módulo** | ~30 × 30 mm | 10 en el primer pedido (diseño para hasta 31) | Fase H3 — este documento |
-| **Base (controlador)** | por definir | 1–2 | Después de H3 |
+| **Base (controlador)** | — | 0 | **No lleva PCB**: va en placa perforada (`05_montaje_base.md`). Pedir una PCB para una sola unidad no sale rentable |
 | **LED** | — | — | **No lleva placa propia**: un LED RGB de 5 mm (ánodo común) con 4 hilos a la tira J6 |
 | *Devboard CH32V003* | 36 × 20,32 mm | 0 | Ejercicio de aprendizaje; **no se pide** |
 

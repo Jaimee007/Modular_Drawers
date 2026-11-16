@@ -101,6 +101,7 @@ Previstos, aún sin escribir: `phase3_bus` y `base_bus` (bus half-duplex con `PI
 - **Cada pulsación del final de carrera** pasa al siguiente modo: 0 apagado, 1 rojo, 2 verde, 3 azul, 4 blanco, 5 ciclo de color con PWM.
 - **Criterio:** cada color enciende solo, el blanco es R + G + B, `rgb 255 80 0` da naranja, `fade` sube y baja y se para con una tecla, y cada pulsación cambia de modo una sola vez (sin dobles por rebote).
 - **Medidas del LED** (MP017043, 6 V, un color a la vez): Vf rojo 1,923 V a 19,64 mA; verde 2,92 V a 19,2 mA; azul 2,93 V a 19,3 mA.
+- **En el proyecto final** estos mismos pines (GPIO4/5/7 y GPIO6) son el LED y el final de carrera de la base (`02_diseno_hardware.md` §10).
 - **MOSFET:** el BS170 (TO-92) o el RFD14N05L (TO-251) sirven para el banco, pero **no validan el 2N7002 de la PCB**. Comprueba el pinout con el multímetro en modo diodo antes de alimentar.
 - **Fase del plan:** 2.1 (el LED, en el ESP32 en lugar del módulo).
 

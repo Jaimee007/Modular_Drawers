@@ -149,12 +149,8 @@ La placa de módulo lleva **una sola pieza Extended** (el micro). El 2N7002 (C85
 | Condensador 100 nF (0603) | 100 nF 50 V X7R | C14663 | Básica | < 0,01 $ | — |
 | Condensador 1 µF (0603) | Samsung CL10A105KB8NNNC, 50 V X5R | C15849 | Básica | < 0,01 $ | — |
 | Condensador 10 µF (0805) | Samsung CL21A106KAYNNNE, 25 V X5R | C15850 | Básica | < 0,01 $ | — |
-| *Solo placa base:* diodo del TX del bus | B5819W SL (SOD-123) | C8598 | Básica | 0,03 $ | ~601 000 |
-| *Solo placa base:* USB-C | TYPE-C-31-M-12 | C165948 | Extendida | 0,19 $ | ~330 000 |
-| *Solo placa base:* resistencias 5,1 kΩ (CC1 y CC2) | Genéricas 0603 | Varios | Básicas | < 0,01 $ | — |
-| *Solo placa base (opcional, en vez de la SuperMini):* ESP32 | ESP32-C3-MINI-1-N4 | C2838502 | Extendida | 3,05 $ | ~1 160 |
 
-> El USB-C de la base debe ser de **16 pines con patas pasantes de anclaje**, no solo SMD (ver `02_diseno_hardware.md` §7.2). Comprueba la ficha de C165948 antes de pedir.
+> **La base no lleva PCB**: va en placa perforada con piezas de patillas (`05_montaje_base.md`), así que no se pide nada de ella a JLCPCB. Su diodo del TX es el 1N5819 de Farnell, y la entrada de 5 V es el breakout USB-C de 2,54 mm.
 
 **Lo que no se pide montado en JLCPCB** (todo THT, se suelda a mano, ~10 min por placa):
 
@@ -265,7 +261,7 @@ Pedido de partida: **10 módulos + la base**. La base va en **placa perforada**,
 - **Altura enchufada:** header + hembra tiene que caber en los 20 mm de zona trasera.
 - **Envío gratis:** Farnell España da 75 € en las fichas que vi, y otras indican 80 € o 95 €. Míralo en el pago.
 - **Alimentar por la SuperMini:** no he verificado cuánta corriente aguanta su pin de 5 V, ni qué pasa si enchufas a la vez su USB-C.
-- **Pines del ESP32:** están fijados en `02_diseno_hardware.md` §10 (bus en GPIO20/21).
+- **Pines del ESP32:** están fijados en `02_diseno_hardware.md` §10 (bus en GPIO20/21, LED y final de carrera de la base en GPIO4/5/6/7).
 - **LED RGB:** el diseño ya usa ánodo común con un MOSFET por color. Comprueba que el LED comprado es de ánodo común y prueba uno en protoboard con las resistencias de `03_diseno_pcb.md` §4 antes de pedir las placas.
 - **2N7002 en JLCPCB:** el código es C8545 (JSCJ), confirmado como Basic. Falta comprobar su stock.
 - **PWM en PC6, PC7 y PD0:** no está comprobado que los tres tengan PWM por hardware. Si no, el PWM es por software.
