@@ -2,6 +2,17 @@
 
 Versión 1.1 · Octubre 2026 · Conexión entre cajones con cable plano IDC (sustituye a los pogo pins)
 
+> ⚠️ **Documento histórico, no vigente.** Es el plan de diseño original (octubre 2026) y se conserva por las decisiones que recoge, pero **contradice al diseño actual** en varios puntos:
+>
+> | Este documento dice | El diseño vigente |
+> |---|---|
+> | LED direccionable WS2812B / SK6812 en PC6 | LED RGB de ánodo común con 3 MOSFET 2N7002 en PC6, PC7 y PD0 |
+> | 6 puentes de dirección, direcciones 1–63 | 5 puentes, direcciones 1–31 (PC0–PC4) |
+> | Coletas de cable plano soldadas a la placa | Box header 2×3 en las cuatro caras; el cable nunca se suelda |
+> | Pads de programación con puntas pogo | Tira J5 de 3 pines |
+>
+> **La fuente de verdad es `../02_diseno_hardware.md`**; el resto de documentos están indexados en el `README.md` de la raíz.
+
 ---
 
 ## 0. Requisitos confirmados

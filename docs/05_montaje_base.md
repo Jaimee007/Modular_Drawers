@@ -34,7 +34,7 @@ Los 5,1 kΩ de CC1 y CC2 vienen en el adaptador USB-C; si no, son dos más de Fa
 
 ## 2. Asignación de pines
 
-Son los de `02_diseno_hardware.md` §10. No cambiar sin actualizar también el firmware.
+La asignación de GPIO es la de `02_diseno_hardware.md` §10 (**fuente única**; no cambiar sin actualizar también el firmware). Esta tabla solo añade a dónde se conecta cada pin al montar la base:
 
 | GPIO SuperMini | Función | A dónde va |
 |---|---|---|

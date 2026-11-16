@@ -41,15 +41,14 @@ De ahí sale la línea divisoria:
 ```
 Modular_Drawers/
 ├── firmware/
-│   ├── modulo/                  ← proyecto PlatformIO del CH32V003
-│   │   ├── platformio.ini
-│   │   ├── include/
-│   │   │   ├── bus.h            ← protocolo y CRC, COMPARTIDO
-│   │   │   └── funconfig.h
-│   │   └── src/main.c
+│   ├── common/bus.h             ← protocolo y CRC, COMPARTIDO
+│   ├── module/                  ← proyecto PlatformIO del CH32V003
+│   │   ├── platformio.ini       ← un entorno por programa (ver 07_pruebas_banco.md)
+│   │   ├── include/funconfig.h
+│   │   └── src/phaseN_<función>.c
 │   └── base_test/               ← proyecto del ESP32 (pruebas, fases 3-6)
 │       ├── platformio.ini
-│       └── src/main.cpp
+│       └── src/base_<función>.cpp
 ├── esphome/
 │   ├── components/cajonera/     ← componente externo (fase 7)
 │   └── cajonera.yaml
@@ -62,10 +61,10 @@ Modular_Drawers/
 
 ### 2.1 Configuración de PlatformIO
 
-**`firmware/modulo/platformio.ini`**
+**`firmware/module/platformio.ini`** (un entorno por programa; ver `07_pruebas_banco.md`)
 
 ```ini
-[env:modulo]
+[env:phase3_bus_tx]
 platform = https://github.com/Community-PIO-CH32V/platform-ch32v.git
 board = genericCH32V003F4P6
 framework = ch32v003fun
@@ -75,7 +74,7 @@ upload_protocol = minichlink
 **`firmware/base_test/platformio.ini`**
 
 ```ini
-[env:base]
+[env:base_bus_rx]   ; un entorno por programa: ver 07_pruebas_banco.md
 platform = espressif32
 board = esp32-c3-devkitm-1
 framework = arduino
@@ -205,14 +204,9 @@ A partir de los puentes JP7/JP8:
 
 ### 4.5 Pines de la SuperMini
 
-Misma asignación que `02_diseno_hardware.md` §10. El firmware la usa tal cual:
+La asignación de pines está **solo** en `02_diseno_hardware.md` §10; esa tabla es la única fuente y el firmware la usa tal cual. No se repite aquí para que no pueda divergir.
 
-| GPIO | Función |
-|---|---|
-| GPIO21 (TX) | Bus DATA, a través del Schottky |
-| GPIO20 (RX) | Bus DATA |
-| GPIO0 / GPIO1 / GPIO3 / GPIO10 | SENSE L / R / U / D |
-| GPIO8 | LED de estado |
+Resumen: el bus va por UART0 (GPIO20 RX, GPIO21 TX), los cuatro SENSE por GPIO0, 1, 3 y 10, y el LED de estado es el de la propia SuperMini.
 
 ## 5. Integración en Home Assistant
 
@@ -250,132 +244,23 @@ Si el componente externo de ESPHome se complica, se mantiene el firmware Arduino
 
 ## 6. Plan de construcción y pruebas
 
-Cada fase termina con una **prueba de aceptación**. No pasar a la siguiente hasta que la anterior funcione: así, cuando algo falle, el problema está en lo último que se añadió.
+El software se construye en **10 fases (0 a 9)**, cada una con su prueba de aceptación: no se pasa a la siguiente hasta que la anterior funcione. El detalle (montaje, pasos y criterios) está **solo** en dos documentos, para que no haya dos versiones:
 
-| Fase | Objetivo | Hardware | Duración |
-|---|---|---|---|
-| 0 | Entorno y repositorio | PC, WCH-LinkE | 1–2 h |
-| 1 | Primer programa: parpadeo y `printf` | 1 micro | 1 h |
-| 2 | Periféricos, uno a uno | + LED, interruptor, puentes | 3–4 h |
-| 3 | Bus DATA: el controlador habla con un módulo | + ESP32, diodo Schottky, resistencias | 4–6 h |
-| 4 | Dos módulos en el mismo bus | 2.º micro | 1–2 h |
-| 5 | SENSE: descubrimiento de posición | Cables entre placas | 3–4 h |
-| 6 | Emparejamiento y lógica completa | — | 3–4 h |
-| 7 | Integración con Home Assistant | HA funcionando | 4–6 h |
-| 8 | Búsqueda, panel y voz | — | 2–3 h |
-| 9 | Prueba final con cajones impresos | Armazones v1 | 2 h |
+- **`plan_firmware.md`**: las fases, en orden, con sus pruebas de aceptación.
+- **`07_pruebas_banco.md`**: qué programa de `firmware/` prueba cada cosa y con qué entorno de PlatformIO.
 
-### Fase 0 · Entorno
-
-1. **VS Code** y la extensión **PlatformIO IDE**.
-2. La plataforma CH32V: `pio pkg install -g -p https://github.com/Community-PIO-CH32V/platform-ch32v.git`
-3. **WCH-LinkUtility**, para dos cosas:
-   - **Actualizar el firmware del WCH-LinkE.** Con firmware antiguo, la grabación falla con "Programming Failed".
-   - **Ponerlo en modo RISC-V.** El WCH-LinkE tiene modo ARM y modo RISC-V; **en modo ARM no reconoce el CH32V003**. Se cambia desde la utilidad o con el botón "ModeS".
-
-✅ **Aceptación:** los dos proyectos compilan.
-
-### Fase 1 · Primer programa
-
-**Conexión del programador:**
-
-| WCH-LinkE | Módulo |
-|---|---|
-| 3V3 | 3V3 — **solo si no hay 5 V en el bus** |
-| GND | GND |
-| SWDIO | SWIO |
-
-> ⚠️ Si el módulo ya recibe corriente del bus, conecta **solo GND y SWIO**. Dos fuentes peleando por el raíl de 3,3 V.
-
-`printf` sale por el mismo hilo SWIO que se usa para programar, lo cual es muy útil porque el UART del micro estará ocupado con el bus. Se activa en `funconfig.h` y se lee con `minichlink -T`.
-
-✅ **Aceptación:** el LED parpadea, se ve el contador en el terminal, y se puede grabar 5 veces seguidas sin errores.
-
-### Fase 2 · Periféricos
-
-| Bloque | Prueba | Aceptación |
+| Fase | Objetivo | Hardware |
 |---|---|---|
-| **LED RGB** | Ciclo rojo → verde → azul → blanco (R+G+B) → apagado | Colores limpios, sin parpadeos raros, y el blanco reconocible como blanco |
-| **Final de carrera** | Imprimir "ABIERTO"/"CERRADO" en cada cambio | 50 aperturas y cierres generan **exactamente 100 eventos**, sin duplicados por rebotes |
-| **Puentes** | Imprimir dirección y emparejamiento al arrancar | Las direcciones 1, 2, 21 y 31 se leen bien; con dirección 0 el LED parpadea en ámbar |
-| **SENSE** | Imprimir el estado de los 4 pines cada 200 ms | Cada pin cambia a 0 solo al llevarlo a GND, sin afectar a los otros |
-
-### Fase 3 · Bus DATA
-
-**Montaje:**
-
-| Conexión | Detalle |
-|---|---|
-| GND común | ESP32, micro y programador |
-| Pull-up del bus | 4,7 kΩ entre DATA y 3V3, **solo en la base** |
-| ESP32 RX | Directo a DATA |
-| ESP32 TX | A DATA a través de un diodo Schottky (cátodo hacia el TX) |
-| Micro DATA | A través de 1 kΩ |
-
-**Menú de pruebas por el monitor serie:**
-
-```
-ping 1            → PING al módulo 1
-led 1 0 0 255     → módulo 1 en azul (R G B)
-state 1           → estado (abierto/cerrado)
-stress 1 1000     → 1000 PING seguidos y recuento de errores
-```
-
-**Depuración con el analizador lógico** (canales según los puntos de test de la placa): DATA, LED, y dos SENSE. En PulseView, decodificador UART a 115200 8N1 sobre el canal de DATA.
-
-✅ **Aceptación:** `ping 1` responde siempre, `led` cambia el color al momento, y `stress 1 1000` da **0 errores**.
-
-### Fase 4 · Dos módulos
-
-1. Segundo módulo con **dirección 2**, su DATA a la misma línea con su propia resistencia de 1 kΩ.
-2. `ping 1` y `ping 2` responden por separado; `led 1 …` solo afecta al módulo 1.
-3. **Prueba de error:** poner los dos en la dirección 1. El controlador debe recibir respuesta corrupta (CRC incorrecto) y avisar de "dirección duplicada".
-
-✅ **Aceptación:** los dos responden de forma independiente, `stress` a los dos da 0 errores, y la duplicación se detecta.
-
-### Fase 5 · SENSE y posición
-
-**Montaje:** une los SENSE entre módulos, con 1 kΩ en cada lado.
-
-**Pruebas:**
-
-1. `map` muestra la posición correcta.
-2. Cambiar el orden físico de los módulos → `map` lo refleja.
-3. Desconectar y reconectar la alimentación de un módulo → el controlador avisa de módulo nuevo y lo recoloca **sin reiniciar nada**.
-4. Quitar el cable SENSE entre dos módulos → uno aparece "sin posición" pero sigue respondiendo al bus.
-
-✅ **Aceptación:** las cuatro pruebas dan el resultado esperado.
-
-### Fase 6 · Emparejamiento y lógica completa
-
-1. **Agrupación:** cierra JP7 en un módulo y comprueba que el controlador lo agrupa con su vecino de la izquierda y expone **una sola entidad**.
-2. **Validación:** cierra JP7 en un módulo que **no** tiene vecino a la izquierda → debe avisar de error de montaje.
-3. **Cable en Y:** un solo interruptor a los J7 de dos módulos emparejados → al abrir, **los dos** se iluminan en blanco.
-4. **Prioridad:** con un cajón en azul por búsqueda, abrirlo debe ponerlo en verde y luego en blanco.
-5. **Autonomía (requisito R1):** desconecta el controlador y abre un cajón → **debe iluminarse igual**.
-
-✅ **Aceptación:** las cinco pruebas pasan. Especialmente la 5.
-
-### Fase 7 · Home Assistant
-
-1. Pasar la lógica de `base_test` a un componente externo de ESPHome en C++.
-2. UART de ESPHome en los mismos pines, sin cambios de hardware.
-3. Grabar la primera vez por USB; las siguientes por OTA.
-
-✅ **Aceptación:** los cajones aparecen como dispositivos; encender una luz tarda menos de 0,5 s; abrir un cajón actualiza su sensor en menos de 0,5 s; tras reiniciar el ESP32 todo vuelve solo.
-
-### Fase 8 · Búsqueda, panel y voz
-
-✅ **Aceptación:** escribir o decir "resistencias de 10k" ilumina el cajón correcto; al abrirlo se pone verde y luego blanco.
-
-### Fase 9 · Prueba final
-
-1. Pasar los módulos a su forma definitiva dentro de los armazones impresos.
-2. Repetir las pruebas clave de las fases 3, 5 y 8.
-3. **Prueba mecánica:** 100 aperturas y cierres de cada cajón sin un fallo de detección.
-4. **Prueba de resistencia:** 24 h con el controlador encendiendo un cajón al azar cada minuto.
-
-✅ **Aceptación final:** los criterios **A1–A11** de la especificación funcional, con hardware real.
+| 0 | Entorno y repositorio | PC, WCH-LinkE |
+| 1 | Primer programa: parpadeo y `printf` | 1 micro |
+| 2 | Periféricos, uno a uno | + LED, interruptor, puentes |
+| 3 | Bus DATA: el controlador habla con un módulo | + ESP32, diodo Schottky, resistencias |
+| 4 | Dos módulos en el mismo bus | 2.º micro |
+| 5 | SENSE: descubrimiento de posición | Cables entre placas |
+| 6 | Emparejamiento, autonomía y robustez | — |
+| 7 | Integración con Home Assistant | HA funcionando |
+| 8 | Búsqueda, panel y voz | — |
+| 9 | Prueba final con cajones impresos | Armazones v1 |
 
 ---
 

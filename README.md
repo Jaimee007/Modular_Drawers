@@ -4,24 +4,50 @@ Cajonera modular inteligente impresa en 3D. Cada unidad de retícula lleva su pr
 
 ## Documentación
 
-La documentación está separada en cuatro niveles, del "qué" al "cómo". **Si solo vas a leer uno, lee el primero.**
+**¿Por dónde empiezo?** Para entender el proyecto, lee el **01**. Para ver cómo está construido, el **02**. Si vas a montar o programar algo en el banco, ve directo a la sección «Montaje y pruebas».
 
-| # | Archivo | Contenido | Cambia cuando… |
+Cada documento responde a una sola pregunta. Si dos documentos parecen decir cosas distintas, **manda el 02** (el diseño de hardware), y el resto se corrige para coincidir con él.
+
+### Qué es y cómo está diseñado
+
+| # | Archivo | Responde a… | Cambia cuando… |
 |---|---|---|---|
-| 1 | [docs/01_especificacion_funcional.md](docs/01_especificacion_funcional.md) | **Qué hace el sistema**: requisitos, comportamiento, estados, criterios de aceptación. Sin un número de pin dentro | …cambia el comportamiento del producto |
-| 2 | [docs/02_diseno_hardware.md](docs/02_diseno_hardware.md) | **Cómo está construido**: arquitectura, componentes, protocolo del bus, alimentación, mecánica | …se cambia un componente o una decisión técnica |
-| 3 | [docs/03_diseno_pcb.md](docs/03_diseno_pcb.md) | **Las placas en KiCad**: esquemáticos, layout, reglas de diseño, pedido a JLCPCB | …se rediseña una placa |
-| 4 | [docs/04_diseno_software.md](docs/04_diseno_software.md) | **El código**: firmware del módulo y del controlador, integración en HA, plan de pruebas por fases | …cambia el firmware |
+| 01 | [especificación funcional](docs/01_especificacion_funcional.md) | **¿Qué hace el sistema?** Requisitos, estados, criterios de aceptación. Sin pines | …cambia el comportamiento del producto |
+| 02 | [diseño de hardware](docs/02_diseno_hardware.md) | **¿Cómo está construido?** Arquitectura, bus, LED, alimentación, mecánica, **pines del ESP32** | …se cambia un componente o una decisión técnica |
+| 03 | [diseño de PCB](docs/03_diseno_pcb.md) | **¿Cómo son las placas?** Esquemático, layout, pedido a JLCPCB | …se rediseña una placa |
+| 04 | [diseño de software](docs/04_diseno_software.md) | **¿Cómo es el código?** Firmware del módulo y de la base, Home Assistant | …cambia el firmware |
 
-Y aparte:
+### Montaje y pruebas (lo que se hace en el banco)
 
-| Archivo | Contenido |
+| # | Archivo | Responde a… |
+|---|---|---|
+| 05 | [montaje de la base](docs/05_montaje_base.md) | **¿Cómo monto la base en placa perforada?** |
+| 06 | [montaje en protoboard](docs/06_montaje_protoboard.md) | **¿Cómo cableo la base y las dos TENSTAR para probar el bus y SENSE?** |
+| 07 | [pruebas de banco](docs/07_pruebas_banco.md) | **¿Qué programa pruebo, con qué entorno, y cuándo está bien?** Índice de `firmware/` |
+| — | [plan de firmware](docs/plan_firmware.md) | **¿En qué orden programo?** Fases 0 a 9, cada una con su prueba de aceptación |
+
+### Compras
+
+| Archivo | Responde a… |
 |---|---|
-| [docs/bom_5_cajones.md](docs/bom_5_cajones.md) | Lista de materiales para un prototipo de 5 cajones, con referencias de LCSC y JLCPCB |
+| [BOM del prototipo](docs/bom_5_cajones.md) | **¿Qué compro y dónde?** Lista de materiales, referencias LCSC y JLCPCB |
 
-## Herramientas
+### Histórico
 
-- `tools/gen_esquematico.py`: genera un esquemático de referencia en HTML. Uso: `python tools/gen_esquematico.py` (solo librería estándar de Python).
+| Archivo | Nota |
+|---|---|
+| [plan de diseño original](docs/archivo/plan_cajonera_modular.md) | **No vigente.** Contradice al diseño actual (LED direccionable, 6 bits de dirección); se conserva por las decisiones que recoge |
+| [esquemático de referencia](docs/esquematico_2_cajones.html) | HTML generado por `tools/gen_esquematico.py` |
+
+## Código y herramientas
+
+| Carpeta | Contenido |
+|---|---|
+| `firmware/module/` | Firmware del CH32V003. Un entorno de PlatformIO por programa (`phaseN_<función>`) |
+| `firmware/base_test/` | Firmware del ESP32-C3. Un entorno por programa (`base_<función>`) |
+| `firmware/common/bus.h` | Protocolo y CRC, **compartido** por los dos proyectos |
+| `Hardware/` | Proyectos de KiCad: `modulo_cajon`, `devboard_ch32v003` y las hojas de simulación |
+| `tools/gen_esquematico.py` | Genera el esquemático de referencia en HTML. Solo librería estándar de Python |
 
 ## Resumen técnico
 

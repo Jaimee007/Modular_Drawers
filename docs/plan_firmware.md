@@ -43,13 +43,14 @@ Modular_Drawers/
 ├── docs/                     ← documentación (ya existe)
 ├── tools/                    ← scripts (ya existe)
 ├── firmware/
-│   ├── cajon/                ← proyecto PlatformIO del CH32V003
-│   │   ├── platformio.ini
-│   │   ├── include/          ← protocolo compartido (bus.h), funconfig.h
-│   │   └── src/main.c
+│   ├── common/bus.h          ← protocolo compartido
+│   ├── module/               ← proyecto PlatformIO del CH32V003
+│   │   ├── platformio.ini    ← un entorno por programa
+│   │   ├── include/funconfig.h
+│   │   └── src/phaseN_<función>.c
 │   └── base_test/            ← proyecto PlatformIO del ESP32 (pruebas, fases 3–6)
 │       ├── platformio.ini
-│       └── src/main.cpp
+│       └── src/base_<función>.cpp
 ├── esphome/                  ← fase 7
 │   ├── components/cajonera/  ← componente externo de ESPHome
 │   └── cajonera.yaml
@@ -58,10 +59,10 @@ Modular_Drawers/
 
 ### 0.3 Configuración de PlatformIO
 
-**`firmware/cajon/platformio.ini`**
+**`firmware/module/platformio.ini`** (un entorno por programa; nombres y comandos en `07_pruebas_banco.md`)
 
 ```ini
-[env:cajon]
+[env:phase3_bus_tx]
 platform = https://github.com/Community-PIO-CH32V/platform-ch32v.git
 board = genericCH32V003F4P6
 framework = ch32v003fun
@@ -79,7 +80,7 @@ La placa también admite el framework Arduino (`framework = arduino`) si en alg�
 **`firmware/base_test/platformio.ini`**
 
 ```ini
-[env:base]
+[env:base_bus_rx]
 platform = espressif32
 board = esp32-c3-devkitm-1
 framework = arduino
@@ -110,7 +111,7 @@ Las dos `build_flags` hacen que el `Serial` del ESP32-C3 SuperMini salga por su 
 ### 1.2 Parpadeo
 
 1. Usa el LED que ya trae la placa de desarrollo. Si no, pon un LED con su resistencia de 330 Ω en **PD4**; vale solo para esta prueba, porque en el diseño final PD4 es el puente «pareja abajo» (JP8).
-2. Copia el ejemplo *blink* de ch32v003fun en `src/main.c`, cambiando el pin.
+2. Copia el ejemplo *blink* de ch32v003fun en un `src/phase1_blink.c` nuevo (con su entorno `phase1_blink`), cambiando el pin.
 3. Pulsa **Upload** (→) en PlatformIO.
 
 ### 1.3 `printf` por el cable de programación
@@ -131,6 +132,8 @@ Monta en la protoboard los componentes según `02_diseno_hardware.md` (§5 LED, 
 
 ### 2.1 LED RGB (PC6, PC7 y PD0)
 
+> **Banco con la SuperMini:** antes de tener los 2N7002 y la PCB, el mismo circuito se prueba desde el ESP32-C3 con el programa `base_rgb_led` (`07_pruebas_banco.md#base_rgb_led`).
+
 - **Conexión** (`02_diseno_hardware.md` §5.1): LED RGB de 5 mm de **ánodo común**, con el común a +5 V. Cada color va por una resistencia (150 Ω el rojo, 100 Ω el verde y el azul) al drenador de un 2N7002; la fuente a GND y la puerta al pin del micro, con 100 kΩ de la puerta a GND.
 
   | Color | Pin del micro |
@@ -147,6 +150,8 @@ Monta en la protoboard los componentes según `02_diseno_hardware.md` (§5 LED, 
 **✅ Prueba de aceptación:** los tres colores salen limpios, sin parpadeos raros, y el blanco (R + G + B) se reconoce como blanco. Mide la corriente de cada color: ≈ 17–20 mA.
 
 ### 2.2 Final de carrera (PD6)
+
+> Programa: `phase2_peripherals` (`07_pruebas_banco.md#phase2_peripherals`). Lo mismo para 2.3 y 2.4.
 
 - **Conexión:** entrada con pull-up interna. COM del interruptor a GND y NO a PD6.
 - **Rebotes:** filtro por software de 25 ms; el estado solo cambia si se mantiene estable ese tiempo.
@@ -241,9 +246,9 @@ En PulseView, añade el decodificador UART (115200, 8N1) al canal 0 para ver las
 
 ## Fase 5 · SENSE: descubrimiento de la posición
 
-### 5.0 Prueba previa: solo la capa eléctrica, con dos placas de desarrollo
+### 5.0 Prueba previa: solo la capa eléctrica, con dos placas TENSTAR
 
-Se puede validar la parte física de SENSE **antes** de tener el bus DATA y el ESP32, con dos placas CH32V003 de desarrollo (A y B). No cubre `SENSE_DRIVE`, `SENSE_QUERY` ni el mapa: eso va por DATA y se prueba en 5.1–5.3.
+Se puede validar la parte física de SENSE **antes** de tener el bus DATA y el ESP32, con dos placas TENSTAR (A y B) y el programa `phase2_peripherals` ampliado (`07_pruebas_banco.md`). No cubre `SENSE_DRIVE`, `SENSE_QUERY` ni el mapa: eso va por DATA y se prueba en 5.1–5.3.
 
 Pines (como en 2.4): PA1 (izquierda), PA2 (derecha), PD2 (arriba) y PD3 (abajo), entradas con pull-up, cada una con 1 kΩ en serie. GND común entre las dos placas.
 
@@ -315,7 +320,17 @@ Implementa la tabla de estados del plan (§2.5):
 - **LEDs encendidos a la vez:** como máximo 10 cajones.
 - **Cajones nuevos:** cada 5 s pregunta a las direcciones que no conoce.
 
-### 6.4 Prueba de resistencia
+### 6.4 Emparejamiento y autonomía
+
+1. **Agrupación:** cierra JP7 en un módulo y comprueba que el controlador lo agrupa con su vecino de la izquierda y expone **una sola entidad**.
+2. **Validación:** cierra JP7 en un módulo que **no** tiene vecino a la izquierda: debe avisar de error de montaje.
+3. **Cable en Y:** un solo interruptor a los J7 de dos módulos emparejados: al abrir, **los dos** se iluminan en blanco.
+4. **Prioridad:** con un cajón en azul por búsqueda, abrirlo debe ponerlo en verde y luego en blanco.
+5. **Autonomía (requisito R1):** desconecta el controlador y abre un cajón: **debe iluminarse igual**.
+
+**✅ Prueba de aceptación:** las cinco pasan, especialmente la 5.
+
+### 6.5 Prueba de resistencia
 
 Deja el sistema funcionando **24 horas**:
 

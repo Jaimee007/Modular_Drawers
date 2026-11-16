@@ -2,9 +2,9 @@
 
 Configuración: **4 cajones 1×1 (50×50) + 1 cajón 2×1 (100×50) + 1 módulo base con el ESP32**. Al haber un módulo por unidad de retícula, son **6 módulos + la base**: el 2×1 son dos módulos idénticos emparejados.
 
-Versión de prototipo: placas de desarrollo y placa perforada, sin PCB a medida. Conexión entre módulos con **latiguillos de cable plano con conector hembra IDC en los dos extremos**; el cable nunca se suelda a la placa (ver `02_diseno_hardware.md` §3). Precios orientativos de AliExpress/LCSC (octubre 2026); pueden variar según el vendedor.
+Prototipo con **PCB de módulo montada por JLCPCB** (`03_diseno_pcb.md`) y **base en placa perforada** (`05_montaje_base.md`). Conexión entre módulos con **latiguillos de cable plano con conector hembra IDC en los dos extremos**; el cable nunca se suelda a la placa (ver `02_diseno_hardware.md` §3). Para probar antes de tener las PCB se usan placas de desarrollo TENSTAR (`07_pruebas_banco.md`). Precios orientativos (octubre–noviembre 2026); pueden variar según el vendedor.
 
-> **Cambio en curso (29/10/2026):** se estudia sustituir el latiguillo IDC por **cable FFC de 10 hilos y 1 mm** con un conector FFC SMD en la placa del módulo (ver §8). Mientras no se decida, las filas del IDC (A4, A5, A6) y el carrito de Farnell de §7 siguen siendo válidos para la **base en placa perforada** y para el prototipo.
+**Cómo se lee este documento:** §1 cuántas piezas lleva cada módulo · §2 lista de compra · §3 costes · §4 notas · §5 lo que monta JLCPCB · §6 LCSC frente a Farnell · §7 carrito de Farnell · §8 cómo buscar el LED.
 
 ---
 
@@ -23,7 +23,7 @@ Versión de prototipo: placas de desarrollo y placa perforada, sin PCB a medida.
 | Microinterruptor (final de carrera) | — | — | 5 (uno por cajón: el 2×1 comparte uno con cable en Y hacia sus dos módulos) |
 | Cable Dupont hembra de 3 hilos, ~150 mm (LED → J6) | 1 | 1 | 7 |
 | Cable Dupont hembra de 2 hilos (interruptor → J7) | 1 (el 2×1 usa un cable en Y) | — | 6 |
-| Regulador AMS1117-3.3 | 1 | — (el ESP32 lleva el suyo) | 6 |
+| LDO XC6206P332 (SMD, **en la PCB**, lo monta JLCPCB) | 1 | — (la SuperMini lleva el suyo) | 6 |
 | Resistencia de 1 kΩ (1 en DATA + 4 en SENSE) | 5 | 4 (SENSE) | 34 |
 | Condensador de 10 µF | 1 | 1 | 7 |
 | Condensador de 100 nF | 2 | 1 | 13 |
@@ -53,11 +53,11 @@ Versión de prototipo: placas de desarrollo y placa perforada, sin PCB a medida.
 | A4 | Conector macho (box header) | **Amphenol T821106A1S100CEU** (Farnell 2215302): box header con carcasa, 2×3, 2,54 mm, **recto** (el latiguillo sale perpendicular a la placa), de patillas. Misma familia que el hembra T812 de A5. La versión de ángulo recto (T821106A1R100CEU, Farnell 2215288) estaba sin stock. Precio y stock sin verificar | 40 en el carrito (4 por módulo → 10 módulos; la base necesita 4 más) | 13,52 € (0,338 € la unidad, Farnell) |
 | A5 | Conector hembra IDC | **Amphenol T812106A101CEU** (Farnell 2215245): hembra, 2×3, 2,54 mm, para cable plano de 1,27 mm, con descarga de tracción. Alternativa sin descarga: T812106A100CEU (Farnell 2215230). Precio no verificado | 40 en el carrito (2 por latiguillo → 20 latiguillos, para 10 módulos) | 14,44 € (0,361 € la unidad, Farnell) |
 | A6 | Cable plano | **Würth 63910615521CAB** (Farnell, DigiKey, Mouser, RS): 6 hilos, 1,27 mm, 28 AWG, gris con hilo 1 rojo, 1 m (≈ 14 latiguillos de 70 mm) | 1 | ≈ 1,20 $ (DigiKey) |
-| A7 | LEDs | **LED RGB de 5 mm, difuso, ánodo común, 4 patillas** (ver "Cómo buscar el LED" en §9). Vale cualquier RGB normal, sin chip. Por ejemplo, en Farnell el Multicomp Pro MP017043 (ref. 5122721) ya estaba en tu carrito, pero su ficha no confirma si es de ánodo común: **compruébalo** | 11 (+ repuestos) | ≈ 4–5 € (0,40 € la unidad, Farnell) |
+| A7 | LEDs | **LED RGB de 5 mm, difuso, ánodo común, 4 patillas** (ver "Cómo buscar el LED" en §8). Vale cualquier RGB normal, sin chip. Por ejemplo, en Farnell el Multicomp Pro MP017043 (ref. 5122721) ya estaba en tu carrito, pero su ficha no confirma si es de ánodo común: **compruébalo** | 11 (+ repuestos) | ≈ 4–5 € (0,40 € la unidad, Farnell) |
 | A8 | Final de carrera | Microinterruptor mini con palanca, tipo KW10 o KW11 | 10 | 2,00 € |
-| A9 | Regulador 3,3 V | Módulo mini AMS1117-3.3 | 10 | 2,50 € |
+| A9 | — (ya no hace falta) | El LDO XC6206 va en la PCB (§5); no se compran módulos AMS1117 | — | — |
 | A10 | Cables Dupont hembra ya crimpados | De 3 hilos (LED) y de 2 hilos (interruptor), ~20 cm, 24 AWG. Evita comprar terminales y crimpadora. Ejemplo en LCSC: SHOU HAN 2.54-3P DT 200mm 24AWG (C5363464), de un solo extremo | 2 packs | 3,00 € (estimación mía, sin precio verificado) |
-| | **Subtotal A** | | | **≈ 38,75 €** |
+| | **Subtotal A** | | | **≈ 36,25 €** |
 
 ### B. Componentes sueltos (packs; quizá ya tengas algunos)
 
@@ -105,13 +105,13 @@ Se supone que ya tienes soldador, estaño, flux y multímetro.
 
 | Bloque | Coste |
 |---|---|
-| A. Componentes específicos del proyecto | ≈ 38,75 € |
+| A. Componentes específicos del proyecto | ≈ 36,25 € |
 | B. Componentes sueltos (packs) | ≈ 35,00 € |
-| **Electrónica total** | **≈ 74 €** |
+| **Electrónica total** | **≈ 71 €** |
 | C. Filamento (si no tienes) | 26–36 € |
 | D. Herramientas y opcionales | 0–22 € |
 
-**Lo que se reaprovecha:** casi todo el bloque B y buena parte del A son packs que sobran. Los límites son los interruptores y los reguladores (sobran para ~5 y ~4 módulos más) y los box header (cada módulo gasta 4). Un módulo extra cuesta poco más que la placa del micro (~1,50 €), los conectores y el latiguillo (~0,40 €) y el filamento (~1,30 €).
+**Lo que se reaprovecha:** casi todo el bloque B y buena parte del A son packs que sobran. El límite son los interruptores (sobran para ~5 módulos más) y los box header (cada módulo gasta 4). Un módulo extra cuesta poco más que la placa del micro (~1,50 €), los conectores y el latiguillo (~0,40 €) y el filamento (~1,30 €).
 
 ---
 
@@ -123,7 +123,7 @@ Se supone que ya tienes soldador, estaño, flux y multímetro.
 4. **LEDs:** RGB de 5 mm de **ánodo común**, controlados por tres MOSFET 2N7002 en la PCB. No tienen canal blanco: el "blanco" al abrir es R+G+B. Un LED de cátodo común no sirve con el circuito de `02_diseno_hardware.md` §5.1: comprueba la polaridad en la ficha y prueba uno en protoboard antes de pedir las placas.
 5. **Placa perforada:** que sea de **doble cara metalizada**. Los conectores macho quedan mucho más firmes que en la de una sola cara.
 6. **Placa USB-C:** antes de usarla, mide con el multímetro que haya 5,1 kΩ entre CC1 y GND y entre CC2 y GND. Si no, añade las resistencias.
-7. **Para pasar a PCB propia** (versión final): los reguladores AMS1117, los zócalos y los jumpers se sustituyen por componentes SMD y puentes de soldadura en la PCB (ver `03_diseno_pcb.md`).
+7. **Las PCB sustituyen** a los zócalos y los jumpers del prototipo en placa perforada: el LDO, las resistencias y los MOSFET son SMD montados por JLCPCB, y los puentes de dirección son de soldadura (ver `03_diseno_pcb.md`).
 
 ---
 
@@ -142,7 +142,6 @@ La placa de módulo lleva **una sola pieza Extended** (el micro). El 2N7002 (C85
 |---|---|---|---|---|---|
 | Microcontrolador | CH32V003F4P6 (TSSOP-20) | C5187096 | Extendida | 0,31 $ (0,24 $ a partir de 50) | ~29 600 |
 | LDO 3,3 V | XC6206P332MR-G (SOT-23) | C5446 | Básica | 0,15 $ | ~462 000 |
-| LDO 3,3 V (alternativa) | AMS1117-3.3 (SOT-223) | C6186 | Básica | 0,21 $ | ~987 000 |
 | MOSFET del LED (Q1–Q3), uno por color | JSCJ 2N7002 (SOT-23, 60 V, 115 mA) | C8545 | Básica | — | Sin leer |
 | Resistencias del LED: 150 Ω, y 100 Ω (×2) | Uni-Royal 0603WAF1500T5E y 0603WAF1000T5E | C22808, C22775 | Básicas | < 0,01 $ | — |
 | Resistencias de puerta 100 kΩ (×3) | Uni-Royal 0603WAF1003T5E | C25803 | Básica | < 0,01 $ | — |
@@ -156,15 +155,6 @@ La placa de módulo lleva **una sola pieza Extended** (el micro). El 2N7002 (C85
 | *Solo placa base (opcional, en vez de la SuperMini):* ESP32 | ESP32-C3-MINI-1-N4 | C2838502 | Extendida | 3,05 $ | ~1 160 |
 
 > El USB-C de la base debe ser de **16 pines con patas pasantes de anclaje**, no solo SMD (ver `02_diseno_hardware.md` §7.2). Comprueba la ficha de C165948 antes de pedir.
-
-**Referencia para una futura placa de LED** (no se pide en este pedido: el prototipo usa un trozo de tira SK6812):
-
-| Función | Pieza | Código JLC/LCSC | Tipo | Precio (1–49) | Stock |
-|---|---|---|---|---|---|
-| LED RGBW | SKC6812RGBW-BW (5050) | C5181320 | Extendida | 0,16 $ | ~8 500 |
-| LED RGBW (otra variante) | SKC6812RGBW-WS | C5378724 | Extendida | 0,10 $ | **sin stock** |
-| LED RGB (alternativa) | WS2812B-B/T (5050) | C2761795 | Extendida | 0,12 $ | ~14 000 |
-| LED RGB 2020 | WS2812B-2020 | C965555 | Extendida | — | **sin stock** |
 
 **Lo que no se pide montado en JLCPCB** (todo THT, se suelda a mano, ~10 min por placa):
 
@@ -187,8 +177,6 @@ La placa de módulo lleva **una sola pieza Extended** (el micro). El 2N7002 (C85
 | Cable plano 1,27 mm | — | **No de 6 vías en LCSC** | Resuelto con Würth 63910615521CAB (Farnell, DigiKey) |
 | CH32V003F4P6 | C5187096 | Existe | Las versiones QFN (C5299908) y SOP-16 (C5346357) tienen otra huella: no son intercambiables |
 | WCH-LinkE | C5236707 ("CH32V003F4P6-EVT+WCH-LinkE") | Existe | Parece un kit con placa de evaluación; no verificado qué incluye |
-| LED WS2812D-F5 | C190565 | **Datos contradictorios** | Una página dice "8 490 en stock, Discontinued"; otra, "Out of Stock". Desde 0,185 $ (5 uds) |
-| LED WS2812D-F5-12mA-C1 | C4154875 | **Datos contradictorios** | 240 en stock en una página, agotado en otra. Desde 0,203 $ (5 uds) |
 | Cable Dupont de 3 hilos ya hecho | C5363464 (SHOU HAN, 200 mm, 24 AWG, un extremo) | Existe | Precio no leído |
 | Tira de pines macho 1×3 | C49257 (BOOMELE) | Existe | Alternativa a la Multicomp Pro SPC20484 de Farnell (B11b), que es la elegida para J5–J7 |
 | Microinterruptor con palanca | Omron SS-01GL (C2896769); candidatos: K9-1267Q (0,12–0,15 $, 325 uds), SS-5GL (0,75 $), KW10-1P-C02 (0,72 $, 23 uds), DM1-16UP-1 (C405950) | Existen | **No he comprobado cuál tiene la palanca y las medidas del diseño.** Elige según la pieza T3 |
@@ -197,7 +185,7 @@ La placa de módulo lleva **una sola pieza Extended** (el micro). El 2N7002 (C85
 | Electrolítico 1000 µF 10 V | C59324 (CapXon 8×14 mm, 0,05 $), C10752 (8×12), C2960391 (10×17) | Existe | C59324 tenía poco stock |
 | Conector USB-C | C165948 (TYPE-C-31-M-12, 16 contactos) | Existe | Es el conector suelto, no una placa breakout. Patas de anclaje sin verificar |
 | ESP32-C3 SuperMini | — | **No está en LCSC** | Solo módulos (ESP32-C3-MINI-1-H4X C41349510, ESP32-C3-WROOM-02-H4 C2944070). La SuperMini hay que comprarla en AliExpress |
-| 1N4148W, XC6206P332, AMS1117, B5819W | C81598, C5446, C6186, C8598 | Códigos del 23/10 | No reverificados hoy |
+| 1N4148W, XC6206P332, B5819W | C81598, C5446, C8598 | Códigos del 23/10 | No reverificados hoy |
 | Placas de desarrollo CH32V003, placa perforada, cable de silicona, insertos M2, jumpers, filamento | — | No los busqué en LCSC | Normalmente AliExpress |
 
 **Alternativas para lo que falta**
@@ -242,7 +230,7 @@ Pedido de partida: **10 módulos + la base**. La base va en **placa perforada**,
 
 | Pieza | Cant. | Qué buscar | Dónde |
 |---|---|---|---|
-| **LED RGB de 5 mm, difuso, ánodo común** (4 patillas, sin driver) | 11 (+ repuestos) | Ver "Cómo buscar el LED" en §9 | Farnell, BricoGeek, AliExpress, LCSC |
+| **LED RGB de 5 mm, difuso, ánodo común** (4 patillas, sin driver) | 11 (+ repuestos) | Ver "Cómo buscar el LED" en §8 | Farnell, BricoGeek, AliExpress, LCSC |
 | Cables Dupont hembra | 20 | "cable puente hembra-hembra 2,54 mm 20 cm" (se cortan por la mitad: 40 colas) | Farnell o LCSC C5363464 |
 | Insertos roscados M2 | 20 | "inserto roscado M2 para plástico" | Farnell o AliExpress |
 | Tornillos M2 de 6 mm | 20 | "tornillo M2 6 mm" | Farnell o AliExpress |
@@ -277,7 +265,7 @@ Pedido de partida: **10 módulos + la base**. La base va en **placa perforada**,
 - **Altura enchufada:** header + hembra tiene que caber en los 20 mm de zona trasera.
 - **Envío gratis:** Farnell España da 75 € en las fichas que vi, y otras indican 80 € o 95 €. Míralo en el pago.
 - **Alimentar por la SuperMini:** no he verificado cuánta corriente aguanta su pin de 5 V, ni qué pasa si enchufas a la vez su USB-C.
-- **Pines del ESP32:** `04_diseno_software.md` no fija TX, RX ni los cuatro SENSE. GPIO5 y GPIO6 son pines de strapping en la SuperMini.
+- **Pines del ESP32:** están fijados en `02_diseno_hardware.md` §10 (bus en GPIO20/21).
 - **LED RGB:** el diseño ya usa ánodo común con un MOSFET por color. Comprueba que el LED comprado es de ánodo común y prueba uno en protoboard con las resistencias de `03_diseno_pcb.md` §4 antes de pedir las placas.
 - **2N7002 en JLCPCB:** el código es C8545 (JSCJ), confirmado como Basic. Falta comprobar su stock.
 - **PWM en PC6, PC7 y PD0:** no está comprobado que los tres tengan PWM por hardware. Si no, el PWM es por software.
@@ -285,50 +273,7 @@ Pedido de partida: **10 módulos + la base**. La base va en **placa perforada**,
 
 ---
 
-## 8. Opción en estudio: FFC de 10 hilos en vez de IDC (29/10/2026)
-
-**Estado: no decidido.** Sustituiría el latiguillo IDC (A4, A5, A6) por cable FFC y un conector SMD en la placa del módulo. Cambia `02_diseno_hardware.md` (§3: conector, pinout, llave) y `03_diseno_pcb.md` (huella, serigrafía), y habría que redibujar la placa de módulo.
-
-### 8.1 Piezas
-
-| Pieza | Referencia | Datos | Estado |
-|---|---|---|---|
-| Cable FFC 10 hilos, tipo A | "10-10-A-0050-C-4-08-4-T" (el que encontraste): 1 mm, 50 mm, refuerzo de 8 mm en cada punta, 60 V, 1 A | Sirve para 10 hilos | Precio no dado. El de 6 hilos costaba 0,70 € |
-| Conector FFC 10 contactos, 1 mm | **TE 1-84952-0** (LCSC C590890): bottom contact, SMD, ZIF, **1 A** | Cumple la corriente | Precio, tipo Basic/Extended y si JLCPCB lo monta: **sin verificar** |
-| Otros conectores de 1 mm | JUSHUO AFA07-S06FCA-00 (C262712) y S08FCA-00 (C262714), 400–500 mA; Amphenol HFW8R-1STE1LF (C7500641), 1 A pero **sin stock** y de patillas | 6 y 8 contactos | No cumplen o no están disponibles |
-
-### 8.2 Por qué 10 contactos
-
-La corriente por contacto en los conectores FFC de 1 mm es de 0,4–1 A. Con 10 contactos se reparten **4 de 5V, 4 de GND, 1 de DATA y 1 de SENSE**, y el bus de paso aguanta ≈ 4 A con los contactos de 1 A.
-
-### 8.3 Ahorro estimado (10 módulos, matriz, sin IVA)
-
-| | IDC (Farnell) | FFC |
-|---|---|---|
-| Conectores de placa (40) | 13,52 € | ≈ 3,6 € (a 0,09 €, **precio de un conector de 6 vías**; el de 10 contactos y 1 A costará más) |
-| Hembras IDC | 7,22–10,83 € | — |
-| Cable | 2,05–4,10 € | ≈ 7–10,5 € (a 0,70 €, **precio del de 6 hilos**) |
-| **Total** | **≈ 22,8–28,5 €** | **≈ 10,6–14,1 €**, y subirá con el conector de 10 contactos |
-
-Cálculo mío, sin ficha de precios del conector de 10 contactos.
-
-### 8.4 Qué se pierde con el FFC
-
-- **Llave mecánica (requisito R4):** el cable plano cabe en las dos orientaciones físicas. El pin 1 se distingue solo por la serigrafía y por la posición del conector.
-- **Robustez:** el FFC aguanta menos ciclos de enchufado (10–30, según JLCPCB).
-- **Prototipo en placa perforada:** el FFC SMD no se suelda a una perforada; el IDC sigue siendo la vía para la base y el prototipo.
-- **Orientación:** el tipo A (mismo lado) obliga a colocar los dos conectores con el pin 1 del mismo lado absoluto.
-
-### 8.5 Pendiente antes de decidir
-
-1. Precio y tipo (Basic/Extended) del TE 1-84952-0 en JLCPCB, y que lo monten en Economic.
-2. Precio del cable de 10 hilos y que el refuerzo sea de 0,3 mm.
-3. Redibujar el pinout de 10 contactos (`02_diseno_hardware.md` §3.2) y la huella en KiCad.
-4. Si los 40 + 40 conectores IDC del carrito de Farnell se mantienen, solo valen para la base y el prototipo.
-
----
-
-## 9. Cómo buscar el LED RGB
+## 8. Cómo buscar el LED RGB
 
 El diseño usa un **RGB normal de 5 mm, difuso, de ánodo común y 4 patillas**. No hace falta chip: lo controlan tres MOSFET de la PCB.
 
