@@ -1,5 +1,7 @@
-// Bench test: drive a common-anode RGB LED through three N-MOSFETs from the
+// base_rgb_led: drive a common-anode RGB LED through three N-MOSFETs from the
 // ESP32-C3 SuperMini, with PWM, serial commands and a limit-switch mode change.
+// Env: base_rgb_led (pio run -e base_rgb_led -t upload)
+// Doc: docs/07_pruebas_banco.md#base_rgb_led
 //
 // Wiring, one branch per colour (same circuit as the module PCB):
 //   +V (4.5..6 V bench supply, later the USB-C 5 V rail) --> LED common anode
@@ -178,7 +180,7 @@ void setup()
     switchRaw = switchStable = (digitalRead(SWITCH_PIN) == LOW);
     switchSince = millis();
 
-    Serial.printf("led_test up: R=GPIO%d G=GPIO%d B=GPIO%d switch=GPIO%d\n", PIN_R, PIN_G,
+    Serial.printf("base_rgb_led up: R=GPIO%d G=GPIO%d B=GPIO%d switch=GPIO%d\n", PIN_R, PIN_G,
                   PIN_B, SWITCH_PIN);
     printHelp();
 }

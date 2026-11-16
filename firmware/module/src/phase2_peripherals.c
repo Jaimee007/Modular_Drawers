@@ -1,4 +1,7 @@
-// Phase 2 bench test: module peripherals, one by one, no bus and no ESP32.
+// phase2_peripherals: module peripherals, one by one, no bus and no ESP32.
+// Env: phase2_peripherals (pio run -e phase2_peripherals -t upload)
+// Doc: docs/07_pruebas_banco.md#phase2_peripherals
+//
 // Everything is reported with printf() over SWIO. Read it with: minichlink -T
 //
 // What it checks (pins from docs/02_diseno_hardware.md section 2.1):

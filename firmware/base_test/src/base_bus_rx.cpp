@@ -1,7 +1,11 @@
-// Phase 3 bench test, base side: listen on the bus line, validate each frame
+// base_bus_rx: first bus check, base side.
+// Env: base_bus_rx (pio run -e base_bus_rx -t upload)
+// Doc: docs/07_pruebas_banco.md#base_bus_rx
+//
+// Listens on the bus line, validates each frame
 // with the shared bus.h, print it over USB and blink the board LED.
 //
-// Wiring (see firmware/module/src/main.c for the module side):
+// Wiring (see firmware/module/src/phase3_bus_tx.c for the module side):
 //   DATA line --> BUS_RX_PIN
 //   DATA line --[4.7 kohm]--> 3V3          (the single pull-up of the system)
 //   module GND --- base GND                (common ground is mandatory)

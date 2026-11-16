@@ -1,8 +1,12 @@
-// Phase 3 bench test, module side: send a PING frame every second on the bus
+// phase3_bus_tx: first bus check, module side.
+// Env: phase3_bus_tx (pio run -e phase3_bus_tx -t upload)
+// Doc: docs/07_pruebas_banco.md#phase3_bus_tx
+//
+// Sends a PING frame every second on the bus
 // line (PD5 = USART1 TX). No LED is needed on the module: the base prints and
 // lights its own LED when it receives a valid frame.
 //
-// Bus test wiring (see firmware/base_test/src/main.cpp for the base side):
+// Bus test wiring (see firmware/base_test/src/base_bus_rx.cpp for the base side):
 //   module PD5 --[1 kohm]--+-- DATA --+-- base RX pin
 //                          |          +-- 4.7 kohm pull-up to 3V3
 //   module GND ------------ common GND with the base
