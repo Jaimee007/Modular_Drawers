@@ -23,6 +23,7 @@ Cada documento responde a una sola pregunta. Si dos documentos parecen decir cos
 |---|---|---|
 | 05 | [montaje de la base](docs/05_montaje_base.md) | **¿Cómo monto la base en placa perforada?** |
 | 06 | [montaje en protoboard](docs/06_montaje_protoboard.md) | **¿Cómo cableo la base y las dos TENSTAR para probar el bus y SENSE?** |
+| 08 | [guía de KiCad de la base](docs/08_guia_kicad_base.md) | **¿Cómo dibujo el esquemático de la base en KiCad?** Símbolos y conexiones, paso a paso |
 | 07 | [pruebas de banco](docs/07_pruebas_banco.md) | **¿Qué programa pruebo, con qué entorno, y cuándo está bien?** Índice de `firmware/` |
 | — | [plan de firmware](docs/plan_firmware.md) | **¿En qué orden programo?** Fases 0 a 9, cada una con su prueba de aceptación |
 

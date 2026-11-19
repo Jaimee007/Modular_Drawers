@@ -36,10 +36,12 @@ Se lanza con `pio run -e <nombre> -t upload` desde la carpeta correspondiente. E
 |---|---|---|---|---|---|
 | [`phase2_peripherals`](#phase2_peripherals) | `firmware/module` | 2 | `pio run -e phase2_peripherals -t upload` | Una placa de módulo | Compila |
 | [`base_rgb_led`](#base_rgb_led) | `firmware/base_test` | 2.1 | `pio run -e base_rgb_led -t upload` | SuperMini + 3 MOSFET + LED + final de carrera | Compila |
+| [`phase3_bus`](#phase3_bus) | `firmware/module` | 3 | `pio run -e phase3_bus -t upload` | Módulo + base, bus bidireccional | Compila |
+| [`base_bus`](#base_bus) | `firmware/base_test` | 3 | `pio run -e base_bus -t upload` | Base: menú `ping`, `stress`, `state`, `scan` | Compila |
 | [`phase3_bus_tx`](#phase3_bus_tx) | `firmware/module` | 3 (parcial) | `pio run -e phase3_bus_tx -t upload` | Módulo → DATA → base | Compila |
 | [`base_bus_rx`](#base_bus_rx) | `firmware/base_test` | 3 (parcial) | `pio run -e base_bus_rx -t upload` | Base escucha DATA | Compila |
 
-Previstos, aún sin escribir: `phase3_bus` y `base_bus` (bus half-duplex con `PING`/`GET_STATE`, menú `ping` y `stress`), y `phase5_sense` y `base_sense` (SENSE por DATA y comando `map`).
+Previstos, aún sin escribir: `phase5_sense` y `base_sense` (SENSE por DATA y comando `map`).
 
 ---
 
@@ -105,6 +107,27 @@ Previstos, aún sin escribir: `phase3_bus` y `base_bus` (bus half-duplex con `PI
 - **MOSFET:** el BS170 (TO-92) o el RFD14N05L (TO-251) sirven para el banco, pero **no validan el 2N7002 de la PCB**. Comprueba el pinout con el multímetro en modo diodo antes de alimentar.
 - **Fase del plan:** 2.1 (el LED, en el ESP32 en lugar del módulo).
 
+### phase3_bus
+
+**Valida:** el bus en los dos sentidos. El módulo escucha en DATA (half-duplex, `HDSEL`, PD5 en open-drain) y responde a `PING` y `GET_STATE` cuando la trama lleva su dirección. Descarta el eco de su propia transmisión y espera ~100 µs antes de contestar.
+
+- **Archivo:** `firmware/module/src/phase3_bus.c`
+- **Cableado:** `06_montaje_protoboard.md` §2: PD5 → 1 kΩ → DATA; un único pull-up de 4,7 kΩ a 3V3 en la base; GPIO20 directo y GPIO21 con Schottky (banda hacia GPIO21); dirección con un cable de PC0 a GND (dirección 1) o PC1 a GND (dirección 2).
+- **Salida:** `printf` por SWIO cada segundo (`ok=… bad=… mine=… open=…`). Abre `minichlink -T` antes de probar.
+- **Final de carrera:** si lo conectas entre PD6 y GND, `GET_STATE` informa de abierto/cerrado.
+- **Fase del plan:** 3 y 4.
+
+### base_bus
+
+**Valida:** el lado de la base del bus bidireccional, con un menú por el monitor serie (115200).
+
+- **Archivo:** `firmware/base_test/src/base_bus.cpp`
+- **Comandos:** `ping N`, `stress N COUNT`, `state N`, `scan`, `help`.
+- **Criterio de aceptación (fase 3):** `ping 1` responde siempre y `stress 1 1000` da **0 errores** (`PASS (0 errors)`).
+- **Fase 4:** con las dos TENSTAR (direcciones 1 y 2), `ping 1` y `ping 2` responden por separado y `scan` lista ambas. Con la **misma dirección** en las dos, hay CRC incorrecto o timeout.
+- **Cómo grabarlo:** `pio run -e base_bus -t upload` en `firmware/base_test`, y `pio device monitor`. Recuerda que el entorno por defecto de esa carpeta es `base_bus_rx`.
+- **Fase del plan:** 3 y 4.
+
 ### phase3_bus_tx
 
 **Valida:** que el módulo emite tramas válidas por DATA. Solo transmite; TX en push-pull.
@@ -127,6 +150,5 @@ Previstos, aún sin escribir: `phase3_bus` y `base_bus` (bus half-duplex con `PI
 
 ## 5. Pendientes
 
-- **`phase3_bus` / `base_bus`:** half-duplex en el módulo (bit `HDSEL`, open-drain, descartar el eco, esperar ~100 µs antes de contestar) y `PING` / `GET_STATE` con el menú `ping 1` y `stress 1 1000` (criterio: 0 errores).
 - **`phase5_sense` / `base_sense`:** `SENSE_DRIVE`, `SENSE_RELEASE`, `SENSE_QUERY` y el comando `map`.
 - Verificar con multímetro los datos de la TENSTAR de §3.1.

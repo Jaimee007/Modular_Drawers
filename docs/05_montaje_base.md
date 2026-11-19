@@ -20,7 +20,7 @@ Versión 1.0 · Noviembre 2026 · **Guía de montaje del módulo base (controlad
 | Adaptador USB-C 16 pines a 2,54 mm (con 5,1 kΩ en CC1/CC2) | 1 | AliExpress o Nafcom (108.MD9245) |
 | Resistencia 4,7 kΩ | 1 | Farnell 3496941 |
 | Resistencia 1 kΩ | 4 | Farnell 4560128 |
-| Diodo Schottky 1N5818 | 1 | Farnell 4050106 |
+| Diodo Schottky 1N5818 o 1N5819 | 1 | Farnell 4050106 (1N5818) o 4050107 (1N5819) |
 | Polyfuse 30R185UU (1,85 A) | 1 | Farnell 1822236 |
 | TVS P6KE6V8A | 1 | Farnell 2981330 |
 | Electrolítico 1000 µF 16 V (KSY108M016S1G5H15K) | 1 | Farnell 2901345 |
@@ -63,35 +63,74 @@ Evitar GPIO2, GPIO8 (salvo el LED de estado de la placa) y GPIO9: son pines de a
 ## 3. Esquema de conexiones
 
 ```
-  USB-C adaptador (VBUS, GND, CC1 5,1k, CC2 5,1k)
-      VBUS ──[polyfuse 1,85 A]──┬──[TVS]── GND
-                                 ├──[1000 µF]── GND
-                                 └── RAIL +5V ──┬► pads 5V de los box header
-                                                └► SuperMini pin 5V (obligatorio)
+  ENTRADA DE 5 V
+  Breakout USB-C (solo VBUS y GND; CC1 y CC2 llevan 5,1 kΩ a GND en el breakout)
+      VBUS ──[polyfuse 30R185UU, 1,85 A]──┬── RAÍL +5V
+                                           ├── TVS P6KE6V8A (banda a +5V) ── GND
+                                           └── 1000 µF, 16 V (+ a +5V) ── GND
+      RAÍL +5V ──┬─► pin 2 y pin 6 de los 4 box header
+                 ├─► SuperMini, pin 5V   (obligatorio)
+                 └─► ánodo común del LED
 
-  SuperMini
+  BUS DATA  (3V3 de la SuperMini)
       3V3 ──┬──[4,7 kΩ]──┐
-            │            DATA ──► pin 3 de los box header (L, R, U, D)
+            │            DATA ──► pin 3 de los 4 box header (L, R, U, D)
             │             ▲
-      GPIO21 (TX) ──►|──┘        (Schottky 1N5818, banda hacia GPIO21)
+      GPIO21 (TX) ──►|──┘        (Schottky 1N5818 o 1N5819, banda hacia GPIO21)
       GPIO20 (RX) ───────────────► DATA
-      GPIO0  ──[1 kΩ]──► SENSE L ──► pin 4 de box header L
-      GPIO1  ──[1 kΩ]──► SENSE R ──► pin 4 de box header R
-      GPIO3  ──[1 kΩ]──► SENSE U ──► pin 4 de box header U
-      GPIO10 ──[1 kΩ]──► SENSE D ──► pin 4 de box header D
-      GND    ────────────────────── GND común
 
-  LED RGB y final de carrera de la base (mismo circuito que un módulo)
-      +5V ──► ánodo común del LED
-      cátodo de cada color ──[150/100/100 Ω]──► DRAIN del MOSFET (source a GND)
-      GPIO4 (rojo) / GPIO5 (verde) / GPIO7 (azul) ──► GATE   (100 kΩ de cada GATE a GND)
-      GPIO6 ──► NO del microinterruptor   (COM a GND)
+  SENSE  (uno por cara, nunca unidos entre sí)
+      GPIO0  ──[1 kΩ]──► pin 4 del box header L
+      GPIO1  ──[1 kΩ]──► pin 4 del box header R
+      GPIO3  ──[1 kΩ]──► pin 4 del box header U
+      GPIO10 ──[1 kΩ]──► pin 4 del box header D
+      GND ────────────── pin 1 y pin 5 de los 4 box header
+
+  LED RGB Y FINAL DE CARRERA  (mismo circuito que un módulo)
+      +5V ──► ánodo común del LED (pata larga)
+      cátodo rojo  ──[150 Ω]──► DRAIN del MOSFET Q1   GATE ◄── GPIO4   SOURCE ──► GND
+      cátodo verde ──[100 Ω]──► DRAIN del MOSFET Q2   GATE ◄── GPIO5   SOURCE ──► GND
+      cátodo azul  ──[100 Ω]──► DRAIN del MOSFET Q3   GATE ◄── GPIO7   SOURCE ──► GND
+      cada GATE ──[100 kΩ]── GND
+      GPIO6 ──► NO del microinterruptor      COM ──► GND
+
+  Cerámicos de 100 nF (×2) cerca de la alimentación de la SuperMini, a GND.
 ```
 
-Notas del esquema:
-- **Schottky:** la banda (cátodo) va hacia GPIO21. Sin el diodo, el TX empujaría la línea a 5 V si hubiera un módulo a 5 V.
+Para dibujar este esquema en KiCad, paso a paso: `08_guia_kicad_base.md`.
+
+### 3.1 Resistencias del LED
+
+Calculadas para **≈ 20 mA por color** con el raíl a 5 V y las tensiones directas **medidas** en el LED MP017043 (6 V, un color a la vez, ≈ 19,5 mA). El cálculo supone ~0,1 V de caída en el MOSFET encendido; es una estimación, no una medida.
+
+| Color | Vf medida | Resistencia | Corriente esperada |
+|---|---|---|---|
+| Rojo | 1,923 V | **150 Ω** | ≈ 19,8 mA |
+| Verde | 2,92 V | **100 Ω** | ≈ 19,8 mA |
+| Azul | 2,93 V | **100 Ω** | ≈ 19,7 mA |
+
+Si el raíl cae a 4,75 V (el mínimo de un USB), salen ≈ 18 mA (rojo) y ≈ 17 mA (verde y azul): se sigue viendo bien y queda lejos de los 30 mA que el LED no debe superar.
+
+### 3.2 Resumen de componentes de la base
+
+| Componente | Cantidad | Para qué |
+|---|---|---|
+| Resistencia 4,7 kΩ | 1 | Pull-up de DATA (único del sistema) |
+| Resistencia 1 kΩ | 4 | Una por línea SENSE |
+| Resistencia 100 kΩ | 3 | Puerta de cada MOSFET a GND |
+| Resistencias 150 Ω / 100 Ω / 100 Ω | 3 | LED (§3.1) |
+| Condensador 1000 µF, 16 V | 1 | Reserva del raíl de 5 V; el único electrolítico del sistema |
+| Condensador 100 nF | 2 | Desacoplo de la SuperMini |
+| Polyfuse 30R185UU (1,85 A) | 1 | Fusible reiniciable: corta si hay un cortocircuito en el raíl de 5 V |
+| TVS P6KE6V8A | 1 | Recorta picos de tensión (enchufar un cargador, descargas); no conduce a 5 V |
+| Schottky 1N5818 o 1N5819 | 1 | Hace que el TX push-pull del ESP32 se comporte como open-drain en DATA |
+| 5,1 kΩ en CC1 y CC2 | 2 | Los trae el breakout; mide antes de enchufar un cargador |
+
+Notas:
+- **Schottky:** la banda (cátodo) va hacia GPIO21. El bus DATA es open-drain: solo se baja a 0 y el pull-up lo sube. El TX del ESP32 es push-pull, así que, con el diodo, un 0 baja la línea y un 1 la deja libre (el diodo queda cortado). Sin él, el TX pelearía con los módulos.
+- **TVS:** unidireccional; la banda (cátodo) va a +5V. Compruébalo en la hoja de datos de tu pieza.
 - **Pull-up:** solo uno en todo el sistema, de DATA a 3V3 de la SuperMini.
-- **Los cuatro SENSE** llevan cada uno su 1 kΩ en serie. No se unen entre sí.
+- **Los cuatro SENSE** llevan cada uno su 1 kΩ en serie.
 
 ---
 
